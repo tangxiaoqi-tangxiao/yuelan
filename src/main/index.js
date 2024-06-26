@@ -62,7 +62,7 @@ app.whenReady().then(() => {
   //创建主窗口
   let MainWindow = createWindow();
 
-  //创建资源窗口(爬虫窗口)
+  //创建资源窗口
   RenderWindows.createResourceWin();
 
   //处理窗口事件
