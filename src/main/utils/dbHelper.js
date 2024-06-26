@@ -1,12 +1,16 @@
-import { Sequelize, DataTypes, Model } from "sequelize"
+import { Sequelize, DataTypes, Model } from "sequelize";
+import { join } from "path";
 
 class DatabaseHelper {
+    static sequelize = null;
     constructor(databaseFile) {
-        this.sequelize = new Sequelize({
-            dialect: 'sqlite',
-            storage: databaseFile,
-            logging: false // 禁用日志输出
-        });
+        if (this.sequelize == null) {
+            this.sequelize = new Sequelize({
+                dialect: 'sqlite',
+                storage: databaseFile,
+                logging: false // 禁用日志输出
+            });
+        }
     }
 
     // 定义模型
@@ -121,4 +125,4 @@ class DatabaseHelper {
     }
 }
 
-module.exports = DatabaseHelper;
+module.exports = new DatabaseHelper(join(__dirname,"../../resources/data/yuelan.db3"));

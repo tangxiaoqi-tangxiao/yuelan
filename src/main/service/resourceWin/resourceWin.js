@@ -6,9 +6,9 @@ import crypto from "crypto";
 class RenderWindows {
   static win = null;
   static createResourceWin() {
-    if (RenderWindows.win == null) {
+    if (this.win == null) {
       // 创建浏览器窗口，并赋值给 global.win
-      RenderWindows.win = new BrowserWindow({
+      this.win = new BrowserWindow({
         fullscreen: true,
         show: false,
         webPreferences: {

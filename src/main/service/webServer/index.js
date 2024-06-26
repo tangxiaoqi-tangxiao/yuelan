@@ -9,7 +9,7 @@ app.use(express.json({ limit: '2gb' }));
 // 解析 URL 编码的请求体
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 
-//自定义中间件来解析纯字符串数据  
+//自定义中间件来解析纯字符串数据
 app.use((req, res, next) => {
     if (req.headers['content-type'] === 'text/plain') {
         let body = '';

@@ -27,6 +27,7 @@
     "express": "^4.19.2",
     "pinia": "^2.1.7",
     "rebuild": "^0.1.2",
+    "sequelize": "^6.37.3",
     "vue-router": "^4.3.0"
   },
   "devDependencies": {
