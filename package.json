@@ -27,6 +27,7 @@
     "express": "^4.19.2",
     "pinia": "^2.1.7",
     "rebuild": "^0.1.2",
+    "sqlite3": "^5.1.7",
     "vue-router": "^4.3.0"
   },
   "devDependencies": {

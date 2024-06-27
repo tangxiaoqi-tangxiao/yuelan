@@ -59,14 +59,11 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window);
   });
 
-  //创建主窗口
-  let MainWindow = createWindow();
+  //创建窗口和处理窗口事件
+  createWindowAndWindowEvent();
 
   //创建资源窗口
   RenderWindows.createResourceWin();
-
-  //处理窗口事件
-  WindowManage(MainWindow);
 
   //监听web文件
   // MonitorFile();
@@ -76,9 +73,17 @@ app.whenReady().then(() => {
 
   app.on("activate", function () {
     // 在 macOS 中，当点击停靠栏图标且没有其他窗口打开时，在应用程序中重新创建一个窗口是很常见的
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length === 0) createWindowAndWindowEvent();
   });
 });
+
+//创建窗口和处理窗口事件
+function createWindowAndWindowEvent() {
+  //创建主窗口
+  let MainWindow = createWindow();
+  //处理窗口事件
+  WindowManage(MainWindow);
+}
 
 // 当所有窗口都关闭时退出程序，但 macOS 除外。在 macOS 上，应用程序及其菜单栏通常保持活动状态，直到用户明确地使用 Cmd + Q 快捷键退出。
 app.on("window-all-closed", () => {
