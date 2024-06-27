@@ -125,4 +125,4 @@ class DatabaseHelper {
     }
 }
 
-module.exports = new DatabaseHelper(join(__dirname,"../../resources/data/yuelan.db3"));
+export default new DatabaseHelper(join(__dirname,"../../resources/data/yuelan.db3"));

@@ -69,7 +69,7 @@ app.whenReady().then(() => {
   WindowManage(MainWindow);
 
   //监听web文件
-  MonitorFile();
+  // MonitorFile();
 
   //运行web服务
   WebServer();

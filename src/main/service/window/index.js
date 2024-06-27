@@ -1,8 +1,32 @@
-import { ipcMain ,app} from "electron";
+import { ipcMain, app, Tray, Menu } from "electron";
+import path from 'path'
 
 const WM_INITMENU = 0x0116;
 
 function WindowManage(MainWindow) {
+  // 创建托盘图标
+  const iconPath = path.join(__dirname, '../../resources/icon.png'); // 你的托盘图标路径
+  let tray = new Tray(iconPath);
+
+  // 托盘图标菜单
+  const contextMenu = Menu.buildFromTemplate([
+    { label: '显示', click: () => { MainWindow.show(); } },
+    { label: '退出', click: () => { app.quit(); } }
+  ]);
+
+  tray.setToolTip('阅览');
+  tray.setContextMenu(contextMenu);
+
+  // 单击托盘图标时显示窗口
+  tray.on('click', () => {
+    MainWindow.isVisible() ? MainWindow.hide() : MainWindow.show();
+  });
+
+  // 退出时销毁托盘图标
+  app.on('before-quit', () => {
+    tray.destroy();
+  });
+
   // 监听窗口最大化和还原，更新图标
   ipcMain.on("index_WindowButton", (event, arg) => {
     if (arg == "max") {
@@ -15,7 +39,7 @@ function WindowManage(MainWindow) {
     } else if (arg == "min") {
       MainWindow.minimize();
     } else if (arg == "close") {
-      MainWindow.close();
+      MainWindow.hide();
     }
   });
 
