@@ -11,6 +11,11 @@ export default defineConfig({
         "@main": resolve("src/main"),
       },
     },
+    build: {
+      rollupOptions: {
+        external: ['sqlite3']
+      }
+    }
   },
   //渲染进程文件
   preload: {
