@@ -7,6 +7,56 @@ import WindowManage from "./service/window/index";
 import { MonitorFile } from "./service/resourceWin/webFile";
 import WebServer from '@main/service/webServer/index.js';
 
+//全局变量
+let MainWindow = null;
+
+//单例
+appSingleton();
+
+//初始化
+function initialize() {
+  //当Electron完成时将调用此方法
+  //初始化并准备创建浏览器窗口。
+  //某些API只能在此事件发生后使用。
+  app.whenReady().then(() => {
+    //  为Windows设置应用用户模型ID
+    electronApp.setAppUserModelId("yuelan");
+
+    //F12在开发中默认打开或关闭DevTools
+    //并忽略生产中的Command dOrControl+R。
+    // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
+    app.on("browser-window-created", (_, window) => {
+      optimizer.watchWindowShortcuts(window);
+    });
+
+    //创建窗口和处理窗口事件
+    createWindowAndWindowEvent();
+
+    //创建资源窗口
+    RenderWindows.createResourceWin();
+
+    //监听web文件
+    // MonitorFile();
+
+    //运行web服务
+    WebServer();
+
+    app.on("activate", function () {
+      // 在 macOS 中，当点击停靠栏图标且没有其他窗口打开时，在应用程序中重新创建一个窗口是很常见的
+      if (BrowserWindow.getAllWindows().length === 0) createWindowAndWindowEvent();
+    });
+  });
+}
+
+//创建窗口和处理窗口事件
+function createWindowAndWindowEvent() {
+  //创建主窗口
+  MainWindow = createWindow();
+  //处理窗口事件
+  WindowManage(MainWindow);
+}
+
+//创建窗口
 function createWindow() {
   // Create the browser window.
   const MainWindow = new BrowserWindow({
@@ -45,49 +95,21 @@ function createWindow() {
   return MainWindow;
 }
 
-//当Electron完成时将调用此方法
-//初始化并准备创建浏览器窗口。
-//某些API只能在此事件发生后使用。
-app.whenReady().then(() => {
-  //  为Windows设置应用用户模型ID
-  electronApp.setAppUserModelId("yuelan");
-
-  //F12在开发中默认打开或关闭DevTools
-  //并忽略生产中的Command dOrControl+R。
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
-  app.on("browser-window-created", (_, window) => {
-    optimizer.watchWindowShortcuts(window);
-  });
-
-  //创建窗口和处理窗口事件
-  createWindowAndWindowEvent();
-
-  //创建资源窗口
-  RenderWindows.createResourceWin();
-
-  //监听web文件
-  // MonitorFile();
-
-  //运行web服务
-  WebServer();
-
-  app.on("activate", function () {
-    // 在 macOS 中，当点击停靠栏图标且没有其他窗口打开时，在应用程序中重新创建一个窗口是很常见的
-    if (BrowserWindow.getAllWindows().length === 0) createWindowAndWindowEvent();
-  });
-});
-
-//创建窗口和处理窗口事件
-function createWindowAndWindowEvent() {
-  //创建主窗口
-  let MainWindow = createWindow();
-  //处理窗口事件
-  WindowManage(MainWindow);
-}
-
-// 当所有窗口都关闭时退出程序，但 macOS 除外。在 macOS 上，应用程序及其菜单栏通常保持活动状态，直到用户明确地使用 Cmd + Q 快捷键退出。
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
+//单例
+function appSingleton() {
+  const gotTheLock = app.requestSingleInstanceLock();
+  if (!gotTheLock) {
     app.quit();
+  } else {
+    app.on('second-instance', (event, commandLine, workingDirectory) => {
+      // 当运行第二个实例时，这里将会被触发
+      // 你可以将主窗口聚焦并处理其他需要的行为
+      if (MainWindow) {
+        MainWindow.show();
+        if (MainWindow.isMinimized()) MainWindow.restore();
+        MainWindow.focus();
+      }
+    });
+    initialize();
   }
-});
+}
