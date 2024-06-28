@@ -34,7 +34,7 @@ app.post("/SendMhtml", (req, res) => {
     const requestBody = req.body; // 这将是一个对象，包含请求体的所有数据
 
     // 插入数据
-    db.run('INSERT INTO WebPage VALUES (NULL,?, ?, ?)', [requestBody.title, requestBody.data,''])
+    db.run('INSERT INTO WebPage VALUES (NULL,?, ?, ?,?)', [requestBody.title, requestBody.data, requestBody.contentText, requestBody.base64Image])
         .then((result) => {
             console.log('Data inserted, ID:', result.id);
         })
@@ -46,7 +46,7 @@ app.post("/SendMhtml", (req, res) => {
     //     if (err) throw err;
     //     res.status(200).send('Hello, World!');
     // });
-    res.status(200).send('Hello, World!');
+    res.status(200).send('');
 });
 
 export default () => {
