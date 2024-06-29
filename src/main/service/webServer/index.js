@@ -1,9 +1,6 @@
 import express from 'express';
 import fs from 'fs';
-import path from 'path'
-import SQLiteHelper from '@main/utils/SQLiteHelper'
-
-const db = new SQLiteHelper(path.join(__dirname, "../../resources/data/yuelan.db3"));
+import db from '@main/utils/SQLiteHelper'
 
 const app = express();
 

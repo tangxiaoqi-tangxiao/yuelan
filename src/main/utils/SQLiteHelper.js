@@ -1,4 +1,5 @@
 import sqlite3 from 'sqlite3';
+import path from 'path';
 
 const sqlite = sqlite3.verbose();
 
@@ -67,4 +68,6 @@ class SQLiteHelper {
     }
 }
 
-export default SQLiteHelper;
+const db = new SQLiteHelper(path.join(__dirname, "../../resources/data/yuelan.db3"));
+
+export default db;
