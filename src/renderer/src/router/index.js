@@ -1,22 +1,17 @@
-import {createRouter,createWebHashHistory} from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 const routes = [
     {
-        path:'/',
-        name:'Home',
-        component:()=>import('@/views/home/Home.vue'),
-        // children:[
-        //     {
-        //         path:'recommend',
-        //         name:'recommend',
-        //         component:()=>import('@/views/recommend/recommend')
-        //     },
-        //     {
-        //         path:'book_collection',
-        //         name:'book_collection',
-        //         component:()=>import('@/views/book_collection/book_collection')
-        //     }
-        // ]
+        path: '/',
+        name: 'home',
+        component: () => import('@/views/home/index.vue'),
+        children: [
+            {
+                path: 'content',
+                name: 'content',
+                component: () => import('@/views/content/index.vue')
+            }
+        ]
     },
     // {
     //     path:'/404',
@@ -29,11 +24,11 @@ const routes = [
 const router = createRouter({
     history: createWebHashHistory(),
     routes
-})
+});
 
 //路由守卫
 router.beforeEach((to, from, next) => {
     next();
-})
+});
 
 export default router;

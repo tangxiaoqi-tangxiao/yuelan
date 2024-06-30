@@ -2,7 +2,7 @@
     <div id="Home">
         <div id="Navigation">
             <ul id="First">
-                <li>
+                <li @click="Home">
                     <el-icon :size="17">
                         <House />
                     </el-icon>
@@ -46,18 +46,19 @@
             </ul>
         </div>
         <div id="Content">
-            <div id="DragTitle">
-                <div id="Title">
-                    <WindowButton></WindowButton>
+            <div>
+                <div id="DragTitle">
+                    <div id="Title">
+                        <WindowButton></WindowButton>
+                    </div>
                 </div>
-            </div>
-            <div style="margin-left: 50px;margin-top: 10px;">
-                <el-input v-model="input" @keyup.enter="Submit" :suffix-icon="Search" style="width: 300px"
-                    placeholder="搜索书籍" />
-                <span style="float: right;margin-right: 20px;">
-                    <el-button type="primary" plain>上传书源</el-button>
-                    <el-button type="primary" plain>上传本地书籍</el-button>
-                </span>
+                <div style="margin-left: 50px;margin-top: 10px;">
+                    <el-input v-model="input" @keyup.enter="Submit" :suffix-icon="Search" style="width: 300px"
+                        placeholder="搜索书籍" />
+                    <span style="float: right;margin-right: 20px;">
+                        <el-button type="primary" plain>上传网页</el-button>
+                    </span>
+                </div>
             </div>
             <div id="NewPage">
                 <router-view></router-view>
@@ -67,14 +68,21 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { Setting, House, Notebook, Box, Delete, QuestionFilled, Search } from '@element-plus/icons-vue'
-import WindowButton from '@/components/WindowButton/WindowButton.vue'
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { Setting, House, Notebook, Box, Delete, QuestionFilled, Search } from '@element-plus/icons-vue';
+import WindowButton from '@/components/WindowButton/WindowButton.vue';
 
 const input = ref(null);
 
+const router = useRouter();
+
 function Submit() {
     Api.Search(input.value);
+}
+router.push('/content');
+function Home() {
+    router.push('/content');
 }
 </script>
 
@@ -148,6 +156,10 @@ li>.FontMargins {
     background-color: rgb(255, 255, 255);
 }
 
+#Content>div {
+    margin-bottom: 20px;
+}
+
 #Title {
     margin-left: auto;
     width: 111px;
@@ -160,5 +172,12 @@ li>.FontMargins {
     width: 100%;
     /* 可拖拽 */
     -webkit-app-region: drag;
+}
+
+#NewPage {
+    overflow-y: auto;
+    width: 100%;
+    height: calc(100% - 99px);
+    ;
 }
 </style>
