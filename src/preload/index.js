@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron";
 import { electronAPI } from "@electron-toolkit/preload";
-import fs from"fs"
+import fs from "fs"
 
 // Custom APIs for renderer
 const Api = {
@@ -17,17 +17,20 @@ const Api = {
     UpdateIcon: (callback) =>
       ipcRenderer.on("index_UpdateIcon", (_event, value) => callback(value)),
   },
-  Search: (value) => ipcRenderer.send("index_Search", value),
-  loadLocalFile: (filePath) => {
-    try {
-      const fileContent = fs.readFileSync(filePath, "utf-8");
-      console.log(fileContent)
-      return fileContent;
-    } catch (error) {
-      console.error("Failed to read file:", error);
-      return null;
-    }
-  },
+  // Search: (value) => ipcRenderer.send("index_Search", value),
+  // loadLocalFile: (filePath) => {
+  //   try {
+  //     const fileContent = fs.readFileSync(filePath, "utf-8");
+  //     console.log(fileContent)
+  //     return fileContent;
+  //   } catch (error) {
+  //     console.error("Failed to read file:", error);
+  //     return null;
+  //   }
+  // },
+  DB: {
+    GetContent: (index) => ipcRenderer.invoke('index_DB_GetContent', index)
+  }
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

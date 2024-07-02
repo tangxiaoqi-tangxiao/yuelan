@@ -6,6 +6,7 @@ import RenderWindows from "@main/service/resourceWin/resourceWin";
 import WindowManage from "./service/window/index";
 import { MonitorFile } from "./service/resourceWin/webFile";
 import WebServer from '@main/service/webServer/index.js';
+import Core from '@main/service/core/index.js'
 
 //全局变量
 let MainWindow = null;
@@ -34,6 +35,9 @@ function initialize() {
 
     //创建资源窗口
     RenderWindows.createResourceWin();
+
+    //运行核心
+    Core();
 
     //监听web文件
     // MonitorFile();

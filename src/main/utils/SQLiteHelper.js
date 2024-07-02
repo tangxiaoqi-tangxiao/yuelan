@@ -43,6 +43,7 @@ class SQLiteHelper {
     all(sql, params = []) {
         return new Promise((resolve, reject) => {
             this.db.all(sql, params, (err, rows) => {
+                console.log(sql,params)
                 if (err) {
                     console.error('Error fetching data:', err.message);
                     reject(err);
@@ -51,6 +52,13 @@ class SQLiteHelper {
                 }
             });
         });
+    }
+
+    // 分页查询函数
+    pagedAll(sql, params = [], page = 1, pageSize = 10) {
+        const offset = (page - 1) * pageSize;
+        const pagedSql = `${sql} LIMIT ? OFFSET ?`;
+        return this.all(pagedSql, [...params, pageSize, offset]);
     }
 
     close() {
