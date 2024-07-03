@@ -1,6 +1,7 @@
-import { contextBridge, ipcRenderer } from "electron";
+import { contextBridge, ipcRenderer, app } from "electron";
 import { electronAPI } from "@electron-toolkit/preload";
 import fs from "fs"
+import path from "path"
 
 // Custom APIs for renderer
 const Api = {
@@ -30,6 +31,9 @@ const Api = {
   // },
   DB: {
     GetContent: (index) => ipcRenderer.invoke('index_DB_GetContent', index)
+  },
+  File: {
+    ResourcesPath: () => ipcRenderer.invoke('getResourcesPath')
   }
 };
 

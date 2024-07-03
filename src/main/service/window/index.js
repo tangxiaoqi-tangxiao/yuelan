@@ -1,5 +1,6 @@
 import { ipcMain, app, Tray, Menu } from "electron";
 import path from 'path'
+import { resources } from '@main/utils/globalVariable'
 
 const WM_INITMENU = 0x0116;
 
@@ -72,6 +73,11 @@ function WindowManage(MainWindow) {
       MainWindow.setEnabled(true);
     });
   }
+
+  //获取文件路径
+  ipcMain.handle('getResourcesPath', async (event) => {
+    return resources;
+  });
 }
 
 export default WindowManage;

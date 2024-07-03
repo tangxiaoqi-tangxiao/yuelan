@@ -4,3 +4,5 @@ out
 .DS_Store
 *.log*
 resources/data/yuelan.db3
+resources/imgs/*
+resources/WebPage/*

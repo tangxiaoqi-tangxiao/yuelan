@@ -9,6 +9,7 @@ export default defineConfig({
     resolve: {
       alias: {
         "@main": resolve("src/main"),
+        "@resources": resolve("resources"),
       },
     },
     build: {

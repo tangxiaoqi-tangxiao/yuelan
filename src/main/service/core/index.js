@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron'
-import db from '@main/utils/SQLiteHelper'
+import db from '@main/utils/sqliteHelper'
 
 
 function initialization() {
