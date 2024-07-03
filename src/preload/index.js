@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer, app } from "electron";
 import { electronAPI } from "@electron-toolkit/preload";
 import fs from "fs"
 import path from "path"
+import { resources } from '../main/utils/globalVariable'
 
 // Custom APIs for renderer
 const Api = {
@@ -33,7 +34,7 @@ const Api = {
     GetContent: (index) => ipcRenderer.invoke('index_DB_GetContent', index)
   },
   File: {
-    ResourcesPath: () => ipcRenderer.invoke('getResourcesPath')
+    ResourcesPath: resources
   }
 };
 

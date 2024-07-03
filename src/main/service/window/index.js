@@ -1,6 +1,5 @@
 import { ipcMain, app, Tray, Menu } from "electron";
 import path from 'path'
-import { resources } from '@main/utils/globalVariable'
 
 const WM_INITMENU = 0x0116;
 

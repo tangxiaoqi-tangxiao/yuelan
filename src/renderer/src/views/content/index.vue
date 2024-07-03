@@ -25,7 +25,8 @@ const dataArr = ref([]);
 // Api.File.ResourcesPath().then((filePath) => {
 //     filePath = data;
 // });
-let filePath = `E:\\yuelan\\resources\\app.asar.unpacked\\resources`;
+// let filePath = `E:\\yuelan\\resources\\app.asar.unpacked\\resources`;
+let filePath = Api.File.ResourcesPath;
 const imagePath = filePath + "/imgs/";
 const WebPagePath = filePath + "/WebPage/";
 
@@ -35,28 +36,12 @@ onMounted(() => {
         datas.forEach(data => {
             dataArr.value.push({
                 title: data.Title,
-                cover: imagePath + data.UUID + ".png",
+                cover: new URL(imagePath + data.UUID + ".png",import.meta.url).href,
                 Content: data.ContentText,
                 date: data.CreateDate
             });
         });
     });
-    let timerId = setInterval(() => {
-        index += 1;
-        Api.DB.GetContent(index).then(datas => {
-            datas.forEach(data => {
-                dataArr.value.push({
-                    title: data.Title,
-                    cover: "data:image/png;base64," + data.Cover,
-                    Content: data.ContentText,
-                    date: data.CreateDate
-                });
-            });
-        });
-        if (index == 10) {
-            clearInterval(timerId);
-        }
-    }, 5000);
 })
 </script>
 
