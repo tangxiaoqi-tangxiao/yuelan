@@ -1,5 +1,4 @@
 <template>
-    <h1>{{filePath}}</h1>
     <div id="content">
         <template v-for="item in dataArr">
             <el-card style="max-width: 280px">
@@ -8,11 +7,6 @@
                     }}</el-text>
                 <img :src="item.cover" style="width: 70%;height: 70%;" /><br>
                 <el-text size="small">{{ item.date }}</el-text>
-                <!-- <div class="image-container" style="width: 300px; height: 70%; overflow: hidden;">
-                    <div class="image"
-                        :style="`width: 100%; height: 100%; background-image: url('${item.cover}'); background-size: cover;`">
-                    </div>
-                </div> -->
             </el-card>
         </template>
     </div>
@@ -22,11 +16,7 @@
 import { ref, onMounted } from 'vue'
 
 const dataArr = ref([]);
-// Api.File.ResourcesPath().then((filePath) => {
-//     filePath = data;
-// });
-// let filePath = `E:\\yuelan\\resources\\app.asar.unpacked\\resources`;
-let filePath = Api.File.ResourcesPath;
+let filePath = "file:///" + Api.File.ResourcesPath;
 const imagePath = filePath + "/imgs/";
 const WebPagePath = filePath + "/WebPage/";
 
@@ -36,7 +26,7 @@ onMounted(() => {
         datas.forEach(data => {
             dataArr.value.push({
                 title: data.Title,
-                cover: new URL(imagePath + data.UUID + ".png",import.meta.url).href,
+                cover: `${imagePath}${data.UUID}.png`,
                 Content: data.ContentText,
                 date: data.CreateDate
             });

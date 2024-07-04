@@ -1,7 +1,5 @@
-import { contextBridge, ipcRenderer, app } from "electron";
-import { electronAPI } from "@electron-toolkit/preload";
-import fs from "fs"
-import path from "path"
+import { contextBridge, ipcRenderer } from "electron/renderer";
+// import { electronAPI } from "@electron-toolkit/preload";
 import { resources } from '../main/utils/globalVariable'
 
 // Custom APIs for renderer
