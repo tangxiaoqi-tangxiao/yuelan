@@ -72,11 +72,6 @@ function WindowManage(MainWindow) {
       MainWindow.setEnabled(true);
     });
   }
-
-  //获取文件路径
-  ipcMain.handle('getResourcesPath', async (event) => {
-    return resources;
-  });
 }
 
 export default WindowManage;
