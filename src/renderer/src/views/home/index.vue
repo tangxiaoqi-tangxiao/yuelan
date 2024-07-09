@@ -6,7 +6,7 @@
                     <el-icon :size="17">
                         <House />
                     </el-icon>
-                    <span class="FontMargins">首页</span>
+                    <span class="FontMargins">最近</span>
                 </li>
                 <li>
                     <el-icon :size="17">
@@ -61,14 +61,14 @@
                 </div>
             </div>
             <div id="NewPage">
-                <router-view></router-view>
+                <router-view :key="indexKey"></router-view>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onUpdated } from 'vue';
 import { useRouter } from 'vue-router';
 import { Setting, House, Notebook, Box, Delete, QuestionFilled, Search } from '@element-plus/icons-vue';
 import WindowButton from '@/components/WindowButton/WindowButton.vue';
@@ -77,12 +77,18 @@ const input = ref(null);
 
 const router = useRouter();
 
+let indexKey = ref("");
+
 function Submit() {
-    Api.Search(input.value);
+    router.push({ name: 'content', query: { keyword: input.value, label: 0 } }).then(() => {
+        indexKey.value = input.value + "0";
+    })
 }
-router.push('/content');
+
 function Home() {
-    router.push('/content');
+    router.push({ name: 'content' }).then(() => {
+        indexKey.value = "";
+    });
 }
 </script>
 
