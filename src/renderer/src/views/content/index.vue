@@ -10,7 +10,6 @@
                     <el-text size="small">{{ item.date }}</el-text>
                 </el-card>
             </template>
-
         </div>
         <div ref="_load" class="load">这里一片荒芜</div>
     </div>
@@ -65,7 +64,7 @@ function handleResize(length) {
 
 function GetContent(index) {
     return new Promise((resolve, reject) => {
-        Api.DB.GetContent({ index, keyword: query.keyword }).then(datas => {
+        Api.DB.GetContent({ index, keyword: query.keyword, tagsId: query.tagsId }).then(datas => {
             datas.forEach(data => {
                 _dataArr.value.push({
                     title: data.Title,
@@ -91,16 +90,9 @@ function loadContent() {
             if (entry.isIntersecting) {
                 await GetContent(_index);
 
-                const rect = entry.target.getBoundingClientRect();
-                const inViewport = (
-                    rect.top >= 0 &&
-                    rect.left >= 0 &&
-                    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-                    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-                );
                 let IsContinue = true;
                 while (IsContinue) {
-                    if (inViewport) {
+                    if (isInViewPortOfTwo(entry.target)) {
                         IsContinue = await GetContent(_index);
                     } else {
                         IsContinue = false;
@@ -116,6 +108,13 @@ function loadContent() {
 
     // 开始观察目标元素  
     observer.observe(_load.value);
+}
+
+function isInViewPortOfTwo(el) {
+    const screenHeight = window.innerHeight || document.documentElement.clientHeight
+        || document.body.clientHeight;
+    const top = el.getBoundingClientRect() && el.getBoundingClientRect().top;
+    return top <= screenHeight + 100;
 }
 </script>
 

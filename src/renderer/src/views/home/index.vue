@@ -1,7 +1,46 @@
 <template>
     <div id="Home">
         <div id="Navigation">
-            <ul id="First">
+            <div class="Menu">
+                <el-menu active-text-color="#409eff" background-color="rgb(239, 239, 242)" default-active="1"
+                    text-color="rgb(84, 84, 93)">
+                    <el-menu-item class="background-menu" aria-selected="true" index="1" @click="Home">
+                        <el-icon>
+                            <House />
+                        </el-icon>
+                        <span>最近</span>
+                    </el-menu-item>
+                    <!-- <el-menu-item index="2">
+                        <el-icon><Collection /></el-icon>
+                        <span>收藏夹</span>
+                    </el-menu-item> -->
+                    <el-sub-menu index="2">
+                        <template #title>
+                            <el-icon>
+                                <Collection />
+                            </el-icon>
+                            <span>收藏夹</span>
+                        </template>
+                        <template v-for="(item, index) in _FavoritesArr">
+                            <el-menu-item @click="GetTagContent(item.Id)" class="background-menu"
+                                :index="`1-${index + 1}`">
+                                <el-icon>
+                                    <Tickets />
+                                </el-icon>
+                                <el-text style="width: 100%;" truncated>{{ item.Name
+                                    }}</el-text>
+                            </el-menu-item>
+                        </template>
+                    </el-sub-menu>
+                    <el-menu-item class="background-menu" index="3">
+                        <el-icon>
+                            <PriceTag />
+                        </el-icon>
+                        <span>标签</span>
+                    </el-menu-item>
+                </el-menu>
+            </div>
+            <!-- <ul id="First">
                 <li @click="Home">
                     <el-icon :size="17">
                         <House />
@@ -29,8 +68,8 @@
                     <span class="FontMargins">删除</span>
                     <div style="margin-left: auto;margin-right: 10px;">0</div>
                 </li>
-            </ul>
-            <ul id="Second">
+            </ul> -->
+            <!-- <ul id="Second">
                 <li>
                     <el-icon :size="17">
                         <Setting />
@@ -43,7 +82,7 @@
                     </el-icon>
                     <span class="FontMargins">帮助</span>
                 </li>
-            </ul>
+            </ul> -->
         </div>
         <div id="Content">
             <div>
@@ -53,7 +92,7 @@
                     </div>
                 </div>
                 <div style="margin-left: 50px;margin-top: 10px;">
-                    <el-input v-model="input" @keyup.enter="Submit" :suffix-icon="Search" style="width: 300px"
+                    <el-input v-model="_input" @keyup.enter="Submit" :suffix-icon="Search" style="width: 300px"
                         placeholder="搜索书籍" />
                     <span style="float: right;margin-right: 20px;">
                         <el-button type="primary" plain>上传网页</el-button>
@@ -61,34 +100,56 @@
                 </div>
             </div>
             <div id="NewPage">
-                <router-view :key="indexKey"></router-view>
+                <router-view :key="_indexKey"></router-view>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, onUpdated } from 'vue';
+import { ref, onUpdated, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { Setting, House, Notebook, Box, Delete, QuestionFilled, Search } from '@element-plus/icons-vue';
+import { PriceTag, House, Collection, Search, Tickets } from '@element-plus/icons-vue';
 import WindowButton from '@/components/WindowButton/WindowButton.vue';
 
-const input = ref(null);
+const _router = useRouter();
 
-const router = useRouter();
+const _input = ref(null);
+const _FavoritesArr = ref([]);
+const _indexKey = ref("");
+const _tagsId = ref(0);
 
-let indexKey = ref("");
+onMounted(() => {
+    Home();
+    GetFavoritesList();
+})
 
 function Submit() {
-    router.push({ name: 'content', query: { keyword: input.value, label: 0 } }).then(() => {
-        indexKey.value = input.value + "0";
+    _router.push({ name: 'content', query: { keyword: _input.value, tagsId: _tagsId.value } }).then(() => {
+        _indexKey.value = _input.value + _tagsId.value;
+        console.log(_indexKey.value)
     })
 }
 
 function Home() {
-    router.push({ name: 'content' }).then(() => {
-        indexKey.value = "";
+    _tagsId.value = 0;
+    _input.value = "";
+    _router.push({ name: 'content' }).then(() => {
+        _indexKey.value = "";
     });
+}
+
+function GetTagContent(tagsId) {
+    _tagsId.value = tagsId;
+    _router.push({ name: 'content', query: { tagsId } }).then(() => {
+        _indexKey.value = tagsId;
+    })
+}
+
+function GetFavoritesList() {
+    Api.DB.GetFavoritesList(1).then(datas => {
+        _FavoritesArr.value = datas;
+    })
 }
 </script>
 
@@ -103,7 +164,7 @@ function Home() {
 #Navigation {
     width: 210px;
     height: 100%;
-    background-color: rgb(230, 230, 230);
+    background-color: rgb(239, 239, 242);
     font-size: 15px;
     color: rgb(0, 0, 0);
     display: flex;
@@ -112,47 +173,15 @@ function Home() {
     -webkit-app-region: drag;
 }
 
-ul {
-    width: 100%;
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    /* 水平居中 */
-    align-items: center;
-}
-
-#First {
-    margin-top: 100px;
-    height: 100%;
+.Menu {
+    margin-top: 90px;
+    /* 不可拖拽 */
+    -webkit-app-region: no-drag;
 }
 
 #Second {
     margin-top: auto;
     height: 91px;
-}
-
-li {
-    list-style-type: none;
-    text-align: center;
-    display: flex;
-    /* 水平居中 */
-    align-items: center;
-    width: calc(100% - 30px);
-    height: 40px;
-    padding-left: 30px;
-    /* 不可拖拽 */
-    -webkit-app-region: no-drag;
-    /* 无法复制文本 */
-    user-select: none;
-}
-
-li:hover {
-    background-color: rgba(0, 0, 0, 0.247);
-    cursor: pointer;
-}
-
-li>.FontMargins {
-    margin-left: 10px;
 }
 
 /* 内容样式 */
@@ -185,5 +214,13 @@ li>.FontMargins {
     width: 100%;
     height: calc(100% - 99px);
     ;
+}
+
+.background-menu:hover {
+    background-color: rgba(197, 197, 197, 0.5);
+}
+
+.Menu /deep/.el-sub-menu__title:hover {
+    background-color: rgba(197, 197, 197, 0.5);
 }
 </style>

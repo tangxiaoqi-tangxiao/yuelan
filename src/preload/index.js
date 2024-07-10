@@ -29,7 +29,8 @@ const Api = {
   //   }
   // },
   DB: {
-    GetContent: (index) => ipcRenderer.invoke('index_DB_GetContent', index)
+    GetContent: (data) => ipcRenderer.invoke('index_DB_GetWebPageList', data),
+    GetFavoritesList: (data) => ipcRenderer.invoke('index_DB_GetFavoritesList', data),
   },
   File: {
     ResourcesPath: resources
