@@ -16,7 +16,7 @@ function GetWebPageList() {
             let sql = `SELECT * FROM WebPage WHERE Title LIKE ? OR ContentText LIKE ? ORDER BY CASE WHEN Title LIKE ? THEN 1 ELSE 2 END`;
             // 查询数据
             row = await db.pagedAll(sql, [keyword_queryParam, keyword_queryParam, keyword_queryParam], data.index, undefined);
-        } else if (data.tagsId) {
+        } else if (data.tagsId && data.tagsId > 0) {
             let sql = `SELECT WebPage.* FROM WebPage_Favorites JOIN WebPage ON WebPage_Favorites.WebPage_Id=WebPage.Id WHERE WebPage_Favorites.Favorites_Id=?`;
             // 查询数据
             row = await db.pagedAll(sql, [data.tagsId], data.index, undefined);

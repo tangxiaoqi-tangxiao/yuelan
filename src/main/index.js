@@ -49,11 +49,6 @@ function initialize() {
       // 在 macOS 中，当点击停靠栏图标且没有其他窗口打开时，在应用程序中重新创建一个窗口是很常见的
       if (BrowserWindow.getAllWindows().length === 0) createWindowAndWindowEvent();
     });
-
-    protocol.handle('atom', (request) => {
-      const filePath = request.url.slice('atom://'.length)
-      return net.fetch(url.pathToFileURL(path.join(__dirname, filePath)).toString())
-    })
   });
 }
 

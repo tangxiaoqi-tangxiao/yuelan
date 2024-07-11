@@ -4,7 +4,8 @@
             <div class="Menu">
                 <el-menu active-text-color="#409eff" background-color="rgb(239, 239, 242)" default-active="1"
                     text-color="rgb(84, 84, 93)">
-                    <el-menu-item class="background-menu" aria-selected="true" index="1" @click="Home">
+                    <el-menu-item @contextmenu.prevent="showMenu($event)" class="background-menu" aria-selected="true"
+                        index="1" @click="Home">
                         <el-icon>
                             <House />
                         </el-icon>
@@ -22,8 +23,8 @@
                             <span>收藏夹</span>
                         </template>
                         <template v-for="(item, index) in _FavoritesArr">
-                            <el-menu-item @click="GetTagContent(item.Id)" class="background-menu"
-                                :index="`1-${index + 1}`">
+                            <el-menu-item @contextmenu.prevent="showMenu($event)" @click="GetTagContent(item.Id)"
+                                class="background-menu" :index="`1-${index + 1}`">
                                 <el-icon>
                                     <Tickets />
                                 </el-icon>
@@ -32,7 +33,7 @@
                             </el-menu-item>
                         </template>
                     </el-sub-menu>
-                    <el-menu-item class="background-menu" index="3">
+                    <el-menu-item @contextmenu.prevent="showMenu($event)" class="background-menu" index="3">
                         <el-icon>
                             <PriceTag />
                         </el-icon>
@@ -40,49 +41,8 @@
                     </el-menu-item>
                 </el-menu>
             </div>
-            <!-- <ul id="First">
-                <li @click="Home">
-                    <el-icon :size="17">
-                        <House />
-                    </el-icon>
-                    <span class="FontMargins">最近</span>
-                </li>
-                <li>
-                    <el-icon :size="17">
-                        <Notebook />
-                    </el-icon>
-                    <span class="FontMargins">书架</span>
-                    <div style="margin-left: auto;margin-right: 10px;">0</div>
-                </li>
-                <li>
-                    <el-icon :size="17">
-                        <Box />
-                    </el-icon>
-                    <span class="FontMargins">书源</span>
-                    <div style="margin-left: auto;margin-right: 10px;">0</div>
-                </li>
-                <li>
-                    <el-icon :size="17">
-                        <Delete />
-                    </el-icon>
-                    <span class="FontMargins">删除</span>
-                    <div style="margin-left: auto;margin-right: 10px;">0</div>
-                </li>
-            </ul> -->
-            <!-- <ul id="Second">
-                <li>
-                    <el-icon :size="17">
-                        <Setting />
-                    </el-icon>
-                    <span class="FontMargins">设置</span>
-                </li>
-                <li>
-                    <el-icon :size="17">
-                        <QuestionFilled />
-                    </el-icon>
-                    <span class="FontMargins">帮助</span>
-                </li>
-            </ul> -->
+            <RightClickMenu v-if="_menuVisible" :x="_menuX" :y="_menuY" :options="_menuOptions"
+                @close="_menuVisible = false" @select="handleMenuSelect" />
         </div>
         <div id="Content">
             <div>
@@ -107,10 +67,11 @@
 </template>
 
 <script setup>
-import { ref, onUpdated, onMounted } from 'vue';
+import { ref, onUnmounted, onMounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import { PriceTag, House, Collection, Search, Tickets } from '@element-plus/icons-vue';
 import WindowButton from '@/components/WindowButton/WindowButton.vue';
+import RightClickMenu from '@/components/RightClickMenu/RightClickMenu.vue';
 
 const _router = useRouter();
 
@@ -118,16 +79,70 @@ const _input = ref(null);
 const _FavoritesArr = ref([]);
 const _indexKey = ref("");
 const _tagsId = ref(0);
+//右键菜单
+const _menuVisible = ref(false);
+const _menuX = ref(0);
+const _menuY = ref(0);
+const _menuOptions = ref([
+    { label: '导出', value: '1' },
+    { label: '选项 2', value: 'option2' },
+    { label: '清空', value: '3' }
+]);
 
 onMounted(() => {
     Home();
     GetFavoritesList();
-})
+
+    //鼠标右键菜单取消事件
+    document.querySelector(".Menu .el-sub-menu__title").addEventListener("contextmenu",showMenu);
+    window.addEventListener('click', handleClickOutside(false));//左键
+    window.addEventListener('contextmenu', handleClickOutside(true));//右键
+    window.addEventListener('blur', handleClickOutside(false));
+    document.querySelector("#NewPage").addEventListener('scroll', handleClickOutside(false));
+});
+
+onUnmounted(() => {
+    //鼠标右键菜单取消事件
+    document.querySelector(".Menu .el-sub-menu__title").removeEventListener('contextmenu', showMenu);
+    window.removeEventListener('click', handleClickOutside(false));//左键
+    window.removeEventListener('contextmenu', handleClickOutside(true));//右键
+    window.removeEventListener('blur', handleClickOutside(false));
+    document.querySelector("#NewPage").removeEventListener('scroll', handleClickOutside(false));
+});
+
+//打开右键菜单
+const showMenu = function (event) {
+    event.preventDefault(); 
+    _menuVisible.value = false;
+    nextTick(() => {
+        _menuX.value = event.clientX;
+        _menuY.value = event.clientY;
+        _menuVisible.value = true;
+    });
+}
+//触发菜单事件
+const handleMenuSelect = (optionValue) => {
+    console.log(`父组件处理: 点击了 ${optionValue}`);
+    _menuVisible.value = false;
+}
+//关闭右键菜单
+const handleClickOutside = (bool) => {
+    return (event) => {
+        // 检查事件目标是否是 class 为 'card' 的元素或其子元素
+        if (bool && (event.target.closest('.background-menu') || event.target.closest('.Menu .el-sub-menu__title'))) {
+            return; // 如果是，直接返回，不执行后续逻辑
+        }
+
+        if (_menuVisible.value) {
+            _menuVisible.value = false;
+        }
+    }
+}
 
 function Submit() {
     _router.push({ name: 'content', query: { keyword: _input.value, tagsId: _tagsId.value } }).then(() => {
         _indexKey.value = _input.value + _tagsId.value;
-        console.log(_indexKey.value)
+        console.log(_indexKey.value);
     })
 }
 
@@ -170,7 +185,7 @@ function GetFavoritesList() {
     display: flex;
     flex-direction: column;
     /* 可拖拽 */
-    -webkit-app-region: drag;
+    /* -webkit-app-region: drag; */
 }
 
 .Menu {

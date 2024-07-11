@@ -34,6 +34,9 @@ const Api = {
   },
   File: {
     ResourcesPath: resources
+  },
+  RightClickMenu: {
+    OpenWebPage: (UUID) => ipcRenderer.send("index_RightClickMenu_OpenWebPage", UUID)
   }
 };
 
