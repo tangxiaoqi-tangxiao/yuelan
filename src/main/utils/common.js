@@ -1,3 +1,6 @@
+import fse from 'fs-extra';
+import path from 'path';
+
 //格式化日期
 function formatDateTime(date = new Date(), format = 'YYYY-MM-DD HH:mm:ss.sss') {
     const year = date.getFullYear();
@@ -21,4 +24,59 @@ function formatDateTime(date = new Date(), format = 'YYYY-MM-DD HH:mm:ss.sss') {
     return formattedDateTime;
 }
 
-export { formatDateTime };
+//去除不能作为文件名称的字符
+function sanitizeFilename(filename) {
+    // 定义非法字符的正则表达式模式
+    const illegalCharsPattern = /[\/\?<>\\:\*\|":,\n\r]/g;
+
+    // 用空字符串替换非法字符
+    let sanitizedFilename = filename.replace(illegalCharsPattern, '').trim();
+
+    // 如果长度超过100个字符，则截断
+    if (sanitizedFilename.length > 100) {
+        sanitizedFilename = sanitizedFilename.substring(0, 100);
+    }
+
+    //将点替换为下划线
+    sanitizedFilename = sanitizedFilename.replace(/\./g, "_");
+
+    return sanitizedFilename;
+}
+
+//判断文件是否存在，不存在返回原文件名称，存在增加版本号返回文件名称
+function getFileVersionedName(filePath) {
+    const fileName = path.basename(filePath);
+
+    if (!fse.pathExistsSync(filePath)) {
+        return fileName;
+    }
+
+    const getNewVersion = (fileName) => {
+        const parts = fileName.split('_');
+        const versionPart = parts[parts.length - 1];
+
+        if (versionPart && !isNaN(versionPart)) {
+            const versionNumber = parseInt(versionPart, 10);
+            parts[parts.length - 1] = (versionNumber + 1).toString();
+            return parts.join('_');
+        } else {
+            return `${fileName}_1`;
+        }
+    };
+
+    const dir = path.dirname(filePath);
+    const ext = path.extname(filePath);
+    const base = path.basename(filePath, ext);
+
+    let newBase = getNewVersion(base);
+    let newFilePath = path.join(dir, newBase + ext);
+
+    while (fse.pathExistsSync(newFilePath)) {
+        newBase = getNewVersion(newBase);
+        newFilePath = path.join(dir, newBase + ext);
+    }
+
+    return newBase + ext;
+}
+
+export { formatDateTime, sanitizeFilename ,getFileVersionedName};

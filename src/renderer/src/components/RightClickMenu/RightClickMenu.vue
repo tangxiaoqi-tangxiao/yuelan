@@ -1,5 +1,5 @@
 <template>
-  <div class="context-menu" :style="menuStyle" @click="closeMenu">
+  <div ref="contextMenu" class="context-menu" :style="menuStyle" @click="closeMenu">
     <ul>
       <li v-for="option in options" :key="option.value" @click="handleClick(option.value)">
         {{ option.label }}
@@ -10,6 +10,8 @@
 
 <script setup>
 import { defineProps, defineEmits, ref, onMounted } from 'vue'
+
+const contextMenu = ref(null);
 
 const props = defineProps({
   x: {
@@ -44,8 +46,8 @@ const closeMenu = (event) => {
 
 onMounted(() => {
   const menu = menuStyle.value
-  const menuWidth = document.querySelector('.context-menu').offsetWidth
-  const menuHeight = document.querySelector('.context-menu').offsetHeight
+  const menuWidth = contextMenu.value.offsetWidth
+  const menuHeight = contextMenu.value.offsetHeight
   const viewportWidth = window.innerWidth
   const viewportHeight = window.innerHeight
 

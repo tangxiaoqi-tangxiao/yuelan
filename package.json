@@ -26,6 +26,7 @@
     "electron-updater": "^6.1.7",
     "element-plus": "^2.6.1",
     "express": "^4.19.2",
+    "fs-extra": "^11.2.0",
     "multer": "^1.4.5-lts.1",
     "pinia": "^2.1.7",
     "rebuild": "^0.1.2",

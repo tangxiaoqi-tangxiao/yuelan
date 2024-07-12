@@ -2,7 +2,7 @@
     <div id="container" ref="_container">
         <div id="content" ref="_content">
             <template v-for="item in _dataArr">
-                <el-card @contextmenu.prevent="showMenu($event, item.uuid)" style="max-width: 280px" class="card">
+                <el-card @contextmenu.prevent="showMenu($event, item)" style="max-width: 280px" class="card">
                     <el-text line-clamp="2" size="large" style="font-weight: bold;">{{ item.title }}</el-text><br>
                     <el-text line-clamp="3" size="small" style="color:rgb(130, 130, 130);width: 100%;">{{ item.Content
                         }}</el-text>
@@ -46,7 +46,7 @@ const _menuOptions = ref([
 ]);
 
 let _index = 1;
-let _UUID = "";
+let _WebPage= null;
 
 console.log(window.location.href);
 
@@ -80,20 +80,22 @@ onUnmounted(() => {
 });
 
 //打开右键菜单
-const showMenu = function (event, UUID) {
+const showMenu = function (event, data) {
     _menuVisible.value = false;
     nextTick(() => {
         _menuX.value = event.clientX;
         _menuY.value = event.clientY;
         _menuVisible.value = true;
-        _UUID = UUID;
+        _WebPage = data;
     });
 }
 
 //触发菜单事件
 const handleMenuSelect = (optionValue) => {
     if (optionValue == "1") {
-        Api.RightClickMenu.OpenWebPage(_UUID);
+        Api.RightClickMenu.OpenWebPage(_WebPage.UUID);
+    }else if(optionValue == "2"){
+        Api.RightClickMenu.exportWebPage(_WebPage.Id);
     }
 
     _menuVisible.value = false;
@@ -129,6 +131,7 @@ function GetContent(index) {
         Api.DB.GetContent({ index, keyword: query.keyword, tagsId: query.tagsId }).then(datas => {
             datas.forEach(data => {
                 _dataArr.value.push({
+                    Id:data.Id,
                     title: data.Title,
                     uuid: data.UUID,
                     cover: `${_imagePath}${data.UUID}.png`,

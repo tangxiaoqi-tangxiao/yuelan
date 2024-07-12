@@ -53,7 +53,7 @@
                 </div>
                 <div style="margin-left: 50px;margin-top: 10px;">
                     <el-input v-model="_input" @keyup.enter="Submit" :suffix-icon="Search" style="width: 300px"
-                        placeholder="搜索书籍" />
+                        placeholder="搜索网页" />
                     <span style="float: right;margin-right: 20px;">
                         <el-button type="primary" plain>上传网页</el-button>
                     </span>

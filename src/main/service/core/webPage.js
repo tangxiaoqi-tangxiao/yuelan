@@ -30,4 +30,10 @@ function GetWebPageList() {
     });
 }
 
-export { GetWebPageList }
+async function GetWebPage(id) {
+    const sql = `SELECT Title,UUID FROM WebPage WHERE Id=?`;
+    let data = await db.get(sql, [id]);
+    return data;
+}
+
+export { GetWebPageList, GetWebPage }
