@@ -70,6 +70,7 @@ function createWindow() {
     height: 620,
     show: false,
     frame: false, //隐藏工具栏
+    fullscreenable: false,//禁用全屏模式
     titleBarStyle: "hidden",
     ...(process.platform === "linux" ? { icon } : {}),
     webPreferences: {
