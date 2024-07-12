@@ -29,16 +29,17 @@ const Api = {
   //   }
   // },
   DB: {
-    GetContent: (data) => ipcRenderer.invoke('index_DB_GetWebPageList', data),
-    GetFavoritesList: (data) => ipcRenderer.invoke('index_DB_GetFavoritesList', data),
+    GetContent: (data) => ipcRenderer.invoke('index:DB:GetWebPageList', data),
+    GetFavoritesList: (data) => ipcRenderer.invoke('index:DB:GetFavoritesList', data),
   },
   File: {
     ResourcesPath: resources
   },
   RightClickMenu: {
-    OpenWebPage: (UUID) => ipcRenderer.send("index_RightClickMenu_OpenWebPage", UUID),
-    exportWebPage:(UUID)=> ipcRenderer.send("index_RightClickMenu_exportWebPage", UUID),
-    exportWebPageList:(UUID)=> ipcRenderer.send("index_RightClickMenu_exportWebPageList", UUID),
+    OpenWebPage: (UUID) => ipcRenderer.invoke("index:RightClickMenu:OpenWebPage", UUID),
+    exportWebPage: (id) => ipcRenderer.invoke("index:RightClickMenu:exportWebPage", id),
+    DelWebPage: (id) => ipcRenderer.invoke("index:RightClickMenu:DelWebPage", id),
+    exportWebPageList: (UUID) => ipcRenderer.send("index_RightClickMenu_exportWebPageList", UUID),
   }
 };
 

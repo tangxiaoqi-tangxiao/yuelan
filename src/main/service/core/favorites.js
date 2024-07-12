@@ -2,7 +2,7 @@ import { ipcMain } from 'electron'
 import db from '@main/utils/sqliteHelper'
 
 function GetFavoritesList() {
-    ipcMain.handle('index_DB_GetFavoritesList', async (event, data) => {
+    ipcMain.handle('index:DB:GetFavoritesList', async (event, data) => {
         let row = null;
 
         let queryParam = `%${data.keyword}%`;

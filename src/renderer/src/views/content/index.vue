@@ -19,7 +19,8 @@
 
 <script setup>
 import { useRoute } from 'vue-router';
-import { ref, nextTick, onMounted, onUnmounted, watch } from 'vue'
+import { ref, nextTick, onMounted, onUnmounted, watch } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import RightClickMenu from '@/components/RightClickMenu/RightClickMenu.vue';
 
 const { query, params } = useRoute();
@@ -46,7 +47,7 @@ const _menuOptions = ref([
 ]);
 
 let _index = 1;
-let _WebPage= null;
+let _WebPage = null;
 
 console.log(window.location.href);
 
@@ -93,9 +94,57 @@ const showMenu = function (event, data) {
 //触发菜单事件
 const handleMenuSelect = (optionValue) => {
     if (optionValue == "1") {
-        Api.RightClickMenu.OpenWebPage(_WebPage.UUID);
-    }else if(optionValue == "2"){
-        Api.RightClickMenu.exportWebPage(_WebPage.Id);
+        console.log(_WebPage)
+        Api.RightClickMenu.OpenWebPage(_WebPage.uuid).then(result => {
+            if (result.code == 0) {
+                ElMessage({
+                    message: '浏览器打开网页成功',
+                    type: 'success',
+                });
+            } else {
+                ElMessage.error(result.message);
+            }
+        });
+    } else if (optionValue == "2") {
+        Api.RightClickMenu.exportWebPage(_WebPage.Id).then(result => {
+            if (result.code == 0) {
+                ElMessage({
+                    message: '导出成功',
+                    type: 'success',
+                });
+            } else {
+                ElMessage.error("导出失败");
+            }
+        });
+    } else if (optionValue == "3") {
+        ElMessageBox.confirm(
+            `是否确定删除标题为：${_WebPage.title}`,
+            '提示',
+            {
+                confirmButtonText: '是',
+                cancelButtonText: '否',
+                type: 'warning',
+                closeOnClickModal: false
+            }
+        )
+            .then(() => {
+                Api.RightClickMenu.DelWebPage(_WebPage.Id).then(result => {
+                    if (result.code == 0) {
+                        //同步删除数组元素
+                        for (let i = _dataArr.value.length - 1; i >= 0; i--) {
+                            if (_dataArr.value[i].uuid == result.data) {
+                                _dataArr.value.splice(i, 1);
+                            }
+                        }
+                        ElMessage({
+                            message: '删除成功',
+                            type: 'success',
+                        });
+                    } else {
+                        ElMessage.error("删除失败");
+                    }
+                });
+            });
     }
 
     _menuVisible.value = false;
@@ -131,7 +180,7 @@ function GetContent(index) {
         Api.DB.GetContent({ index, keyword: query.keyword, tagsId: query.tagsId }).then(datas => {
             datas.forEach(data => {
                 _dataArr.value.push({
-                    Id:data.Id,
+                    Id: data.Id,
                     title: data.Title,
                     uuid: data.UUID,
                     cover: `${_imagePath}${data.UUID}.png`,
