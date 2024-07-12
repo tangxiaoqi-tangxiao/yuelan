@@ -34,11 +34,12 @@ function openWebPage(UUID) {
 function exportWebPage(id) {
     return new Promise(async (resolve, reject) => {
         // 显示文件夹选择器对话框
-        let DialogArr = await dialog.showOpenDialog({
+        let Dialog = await dialog.showOpenDialog({
             properties: ['openDirectory'] // 只允许选择文件夹
         });
-        if (DialogArr) {
-            const DialogPath = DialogArr[0];
+        
+        if (!Dialog.canceled) {
+            const DialogPath = Dialog.filePaths[0];
             try {
                 let data = await GetWebPage(id);
                 if (data) {
@@ -72,6 +73,12 @@ function exportWebPage(id) {
                     message: err
                 });
             }
+        }else{
+            resolve({
+                code: -1,
+                data: null,
+                message: ""
+            });
         }
     });
 }

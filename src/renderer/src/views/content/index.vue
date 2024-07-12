@@ -107,12 +107,13 @@ const handleMenuSelect = (optionValue) => {
         });
     } else if (optionValue == "2") {
         Api.RightClickMenu.exportWebPage(_WebPage.Id).then(result => {
+            console.log(result)
             if (result.code == 0) {
                 ElMessage({
                     message: '导出成功',
                     type: 'success',
                 });
-            } else {
+            } else if(result.code > 0) {
                 ElMessage.error("导出失败");
             }
         });
