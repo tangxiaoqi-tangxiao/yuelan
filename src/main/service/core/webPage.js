@@ -39,10 +39,22 @@ async function GetWebPage(id) {
 }
 
 async function DelWebPage(id) {
-    let UUID = (await GetWebPage(id)).UUID;
-    let result = await db.run("DELETE FROM WebPage WHERE Id=?", [id]);
-    result.UUID = UUID;
+    let model = await GetWebPage(id);
+    let result = null;
+    if (model) {
+        result = await db.run("DELETE FROM WebPage WHERE Id=?", [id]);
+        result.UUID = model.UUID;
+    } else {
+        result = {
+            changes: 0
+        };
+    }
     return result;
 }
 
-export { initialization, GetWebPageList, GetWebPage, DelWebPage }
+async function RenameTitleWebPage(id, title) {
+    let result = await db.run("UPDATE WebPage SET Title=? WHERE Id=?", [title, id]);
+    return result;
+}
+
+export { initialization, GetWebPageList, GetWebPage, DelWebPage, RenameTitleWebPage }

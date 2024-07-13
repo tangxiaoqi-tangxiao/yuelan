@@ -2,7 +2,7 @@ import { ipcMain, shell, dialog } from 'electron';
 import path from 'path';
 import { resources } from '@main/utils/globalVariable.js';
 import fse from 'fs-extra';
-import { GetWebPage, DelWebPage as DelWebPageDB } from './webPage';
+import { GetWebPage, DelWebPage as DelWebPageDB, RenameTitleWebPage as RenameTitleWebPageDB } from './webPage';
 import { sanitizeFilename, getFileVersionedName } from '@main/utils/common.js';
 
 const WebPagePath = path.join(resources, "WebPage");
@@ -11,6 +11,7 @@ function initialization() {
     ipcMain.handle("index:RightClickMenu:OpenWebPage", (event, UUID) => openWebPage(UUID));
     ipcMain.handle("index:RightClickMenu:exportWebPage", async (event, id) => exportWebPage(id));
     ipcMain.handle("index:RightClickMenu:DelWebPage", async (event, id) => DelWebPage(id));
+    ipcMain.handle("index:RightClickMenu:RenameTitleWebPage", async (event, data) => RenameTitleWebPage(data.id, data.title));
 }
 
 //使用浏览器打开web文件
@@ -37,7 +38,7 @@ function exportWebPage(id) {
         let Dialog = await dialog.showOpenDialog({
             properties: ['openDirectory'] // 只允许选择文件夹
         });
-        
+
         if (!Dialog.canceled) {
             const DialogPath = Dialog.filePaths[0];
             try {
@@ -73,7 +74,7 @@ function exportWebPage(id) {
                     message: err
                 });
             }
-        }else{
+        } else {
             resolve({
                 code: -1,
                 data: null,
@@ -110,7 +111,7 @@ async function DelWebPage(id) {
         });
         return {
             code: 0,
-            data: result.UUID,
+            data: id,
             message: ""
         };
     }
@@ -118,6 +119,23 @@ async function DelWebPage(id) {
         code: 1,
         data: null,
         message: ""
+    };
+}
+
+//重命名网页文件标题
+async function RenameTitleWebPage(id, title) {
+    let result = await RenameTitleWebPageDB(id, title);
+    if (result.changes > 0) {
+        return {
+            code: 0,
+            data: id,
+            message: ""
+        };
+    }
+    return {
+        code: 1,
+        data: id,
+        message: "重命名失败"
     };
 }
 

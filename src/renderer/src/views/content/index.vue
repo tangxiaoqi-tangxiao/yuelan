@@ -4,9 +4,11 @@
             <template v-for="item in _dataArr">
                 <el-card @contextmenu.prevent="showMenu($event, item)" style="max-width: 280px" class="card">
                     <el-text line-clamp="2" size="large" style="font-weight: bold;">{{ item.title }}</el-text><br>
-                    <el-text line-clamp="3" size="small" style="color:rgb(130, 130, 130);width: 100%;">{{ item.Content
+                    <el-text line-clamp="3" size="small" style="color:rgb(130, 130, 130);width: 100%;">{{ item.content
                         }}</el-text>
-                    <img :src="item.cover" style="width: 70%;height: 70%;" /><br>
+                    <el-image style="width: 70%;height: 70%;" :src="item.cover" :preview-src-list="[item.cover]"
+                        fit="fill" />
+                    <br>
                     <el-text size="small">{{ item.date }}</el-text>
                 </el-card>
             </template>
@@ -41,9 +43,9 @@ const _menuOptions = ref([
     { label: '使用浏览器打开', value: '1' },
     { label: '导出', value: '2' },
     { label: '删除', value: '3' },
-    { label: '重命名', value: '3' },
-    { label: '移动', value: '4' },
-    { label: '标签', value: '5' },
+    { label: '重命名', value: '4' },
+    { label: '移动', value: '5' },
+    { label: '标签', value: '6' },
 ]);
 
 let _index = 1;
@@ -94,7 +96,6 @@ const showMenu = function (event, data) {
 //触发菜单事件
 const handleMenuSelect = (optionValue) => {
     if (optionValue == "1") {
-        console.log(_WebPage)
         Api.RightClickMenu.OpenWebPage(_WebPage.uuid).then(result => {
             if (result.code == 0) {
                 ElMessage({
@@ -106,14 +107,13 @@ const handleMenuSelect = (optionValue) => {
             }
         });
     } else if (optionValue == "2") {
-        Api.RightClickMenu.exportWebPage(_WebPage.Id).then(result => {
-            console.log(result)
+        Api.RightClickMenu.exportWebPage(_WebPage.id).then(result => {
             if (result.code == 0) {
                 ElMessage({
                     message: '导出成功',
                     type: 'success',
                 });
-            } else if(result.code > 0) {
+            } else if (result.code > 0) {
                 ElMessage.error("导出失败");
             }
         });
@@ -129,11 +129,11 @@ const handleMenuSelect = (optionValue) => {
             }
         )
             .then(() => {
-                Api.RightClickMenu.DelWebPage(_WebPage.Id).then(result => {
+                Api.RightClickMenu.DelWebPage(_WebPage.id).then(result => {
                     if (result.code == 0) {
                         //同步删除数组元素
                         for (let i = _dataArr.value.length - 1; i >= 0; i--) {
-                            if (_dataArr.value[i].uuid == result.data) {
+                            if (_dataArr.value[i].id == result.data) {
                                 _dataArr.value.splice(i, 1);
                             }
                         }
@@ -145,7 +145,45 @@ const handleMenuSelect = (optionValue) => {
                         ElMessage.error("删除失败");
                     }
                 });
+            }).catch(err => {
+
             });
+    } else if (optionValue == "4") {
+        ElMessageBox.prompt('重命名网页文件', '标题', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            inputValue: _WebPage.title
+        })
+            .then(({ value }) => {
+                Api.RightClickMenu.RenameTitleWebPage({
+                    id: _WebPage.id,
+                    title: value
+                }).then(result => {
+                    if (result.code == 0) {
+                        _dataArr.value.forEach(e => {
+                            if (e.id == result.data) {
+                                e.title = value;
+                            }
+                        });
+                        ElMessage({
+                            message: '重命名成功',
+                            type: 'success',
+                        });
+                    } else {
+                        ElMessage.error("重命名失败");
+                    }
+                })
+            }).catch(err => {
+
+            });
+    } else if (optionValue == "5") {
+        ElMessageBox.alert(
+           " _favorites.value.innerHTML",
+            'HTML String',
+            {
+                dangerouslyUseHTMLString: true,
+            }
+        )
     }
 
     _menuVisible.value = false;
@@ -154,9 +192,14 @@ const handleMenuSelect = (optionValue) => {
 //关闭右键菜单
 const handleClickOutside = (bool) => {
     return (event) => {
-        // 检查事件目标是否是 class 为 'card' 的元素或其子元素
-        if (bool && event.target.closest('.card')) {
-            return; // 如果是，直接返回，不执行后续逻辑
+        if (event.target.closest) {
+            // 检查事件目标是否是 class 为 'card' 的元素或其子元素
+            const cardElement = event.target.closest('.card');
+            const elImageElement = event.target.closest('.el-image-viewer__wrapper');
+            // 如果是 card 元素或其子元素且不是 .el-image，直接返回，不执行后续逻辑
+            if (bool && cardElement && !elImageElement) {
+                return; // 如果是，直接返回，不执行后续逻辑
+            }
         }
 
         if (_menuVisible.value) {
@@ -181,11 +224,11 @@ function GetContent(index) {
         Api.DB.GetContent({ index, keyword: query.keyword, tagsId: query.tagsId }).then(datas => {
             datas.forEach(data => {
                 _dataArr.value.push({
-                    Id: data.Id,
+                    id: data.Id,
                     title: data.Title,
                     uuid: data.UUID,
                     cover: `${_imagePath}${data.UUID}.png`,
-                    Content: data.ContentText,
+                    content: data.ContentText,
                     date: data.CreateDate
                 });
             });

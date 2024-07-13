@@ -39,6 +39,7 @@ const Api = {
     OpenWebPage: (UUID) => ipcRenderer.invoke("index:RightClickMenu:OpenWebPage", UUID),
     exportWebPage: (id) => ipcRenderer.invoke("index:RightClickMenu:exportWebPage", id),
     DelWebPage: (id) => ipcRenderer.invoke("index:RightClickMenu:DelWebPage", id),
+    RenameTitleWebPage: (data) => ipcRenderer.invoke("index:RightClickMenu:RenameTitleWebPage", data),
     exportWebPageList: (UUID) => ipcRenderer.send("index_RightClickMenu_exportWebPageList", UUID),
   }
 };
