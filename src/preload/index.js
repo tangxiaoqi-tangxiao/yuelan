@@ -31,6 +31,7 @@ const Api = {
   DB: {
     GetContent: (data) => ipcRenderer.invoke('index:DB:GetWebPageList', data),
     GetFavoritesList: (data) => ipcRenderer.invoke('index:DB:GetFavoritesList', data),
+    Classification: (data) => ipcRenderer.invoke('index:DB:Classification', data),
   },
   File: {
     ResourcesPath: resources

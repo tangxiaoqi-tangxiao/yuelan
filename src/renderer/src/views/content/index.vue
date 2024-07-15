@@ -17,6 +17,7 @@
     </div>
     <RightClickMenu v-if="_menuVisible" :x="_menuX" :y="_menuY" :options="_menuOptions" @close="_menuVisible = false"
         @select="handleMenuSelect" />
+    <mobileFavorites @closeDialog="closeDialog" v-if="_visible" :Id="_model.Id" :WebPage_Id="_model.WebPage_Id" />
 </template>
 
 <script setup>
@@ -24,6 +25,7 @@ import { useRoute } from 'vue-router';
 import { ref, nextTick, onMounted, onUnmounted, watch } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import RightClickMenu from '@/components/RightClickMenu/RightClickMenu.vue';
+import mobileFavorites from './mobileFavorites.vue'
 
 const { query, params } = useRoute();
 
@@ -32,13 +34,18 @@ const _content = ref(null);
 const _container = ref(null);
 const _load = ref(null);
 const _dataArr = ref([]);
+const _visible = ref(false);
 const _filePath = "file:///" + Api.File.ResourcesPath;
 const _imagePath = _filePath + "/imgs/";
 const _WebPagePath = _filePath + "/WebPage/";
+const _model = ref({
+    Id: 0,
+    WebPage_Id: 0
+});
 //右键菜单
-const _menuVisible = ref(false)
-const _menuX = ref(0)
-const _menuY = ref(0)
+const _menuVisible = ref(false);
+const _menuX = ref(0);
+const _menuY = ref(0);
 const _menuOptions = ref([
     { label: '使用浏览器打开', value: '1' },
     { label: '导出', value: '2' },
@@ -177,13 +184,9 @@ const handleMenuSelect = (optionValue) => {
 
             });
     } else if (optionValue == "5") {
-        ElMessageBox.alert(
-           " _favorites.value.innerHTML",
-            'HTML String',
-            {
-                dangerouslyUseHTMLString: true,
-            }
-        )
+        _model.value.Id = query.Favorites_Id;
+        _model.value.WebPage_Id = _WebPage.id;
+        _visible.value = true;
     }
 
     _menuVisible.value = false;
@@ -208,6 +211,7 @@ const handleClickOutside = (bool) => {
     }
 }
 
+//监听窗口缩放
 function handleResize(length) {
     let cardLength = length && typeof length == 'number' ? length : document.querySelectorAll('.card').length;
     let container = _container.value.clientWidth;
@@ -219,9 +223,10 @@ function handleResize(length) {
     }
 }
 
+//获取内容
 function GetContent(index) {
     return new Promise((resolve, reject) => {
-        Api.DB.GetContent({ index, keyword: query.keyword, tagsId: query.tagsId }).then(datas => {
+        Api.DB.GetContent({ index, keyword: query.keyword, FavoritesId: query.Favorites_Id }).then(datas => {
             datas.forEach(data => {
                 _dataArr.value.push({
                     id: data.Id,
@@ -241,6 +246,7 @@ function GetContent(index) {
     });
 }
 
+//检测加载
 function loadContent() {
     // 创建一个 IntersectionObserver 实例  
     const observer = new IntersectionObserver((entries, observer) => {
@@ -269,11 +275,25 @@ function loadContent() {
     observer.observe(_load.value);
 }
 
+//判断是否到底部
 function isInViewPortOfTwo(el) {
     const screenHeight = window.innerHeight || document.documentElement.clientHeight
         || document.body.clientHeight;
     const top = el.getBoundingClientRect() && el.getBoundingClientRect().top;
     return top <= screenHeight + 100;
+}
+
+//关闭移动收藏夹窗口
+function closeDialog(bool) {
+    _visible.value = false;
+    if (bool && query.Favorites_Id > 0) {
+        //同步删除数组元素
+        for (let i = _dataArr.value.length - 1; i >= 0; i--) {
+            if (_dataArr.value[i].id == _model.value.WebPage_Id) {
+                _dataArr.value.splice(i, 1);
+            }
+        }
+    }
 }
 </script>
 

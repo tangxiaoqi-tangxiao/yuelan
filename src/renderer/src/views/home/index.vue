@@ -23,7 +23,7 @@
                             <span>收藏夹</span>
                         </template>
                         <template v-for="(item, index) in _FavoritesArr">
-                            <el-menu-item @contextmenu.prevent="showMenu($event)" @click="GetTagContent(item.Id)"
+                            <el-menu-item @contextmenu.prevent="showMenu($event)" @click="GetFavoritesIdContent(item.Id)"
                                 class="background-menu" :index="`1-${index + 1}`">
                                 <el-icon>
                                     <Tickets />
@@ -78,7 +78,7 @@ const _router = useRouter();
 const _input = ref(null);
 const _FavoritesArr = ref([]);
 const _indexKey = ref("");
-const _tagsId = ref(0);
+const _Favorites_Id = ref(0);
 //右键菜单
 const _menuVisible = ref(false);
 const _menuX = ref(0);
@@ -94,7 +94,7 @@ onMounted(() => {
     GetFavoritesList();
 
     //鼠标右键菜单取消事件
-    document.querySelector(".Menu .el-sub-menu__title").addEventListener("contextmenu",showMenu);
+    document.querySelector(".Menu .el-sub-menu__title").addEventListener("contextmenu", showMenu);
     window.addEventListener('click', handleClickOutside(false));//左键
     window.addEventListener('contextmenu', handleClickOutside(true));//右键
     window.addEventListener('blur', handleClickOutside(false));
@@ -112,7 +112,7 @@ onUnmounted(() => {
 
 //打开右键菜单
 const showMenu = function (event) {
-    event.preventDefault(); 
+    event.preventDefault();
     _menuVisible.value = false;
     nextTick(() => {
         _menuX.value = event.clientX;
@@ -140,31 +140,30 @@ const handleClickOutside = (bool) => {
 }
 
 function Submit() {
-    _router.push({ name: 'content', query: { keyword: _input.value, tagsId: _tagsId.value } }).then(() => {
-        _indexKey.value = _input.value + _tagsId.value;
-        console.log(_indexKey.value);
+    _router.push({ name: 'content', query: { keyword: _input.value, Favorites_Id: _Favorites_Id.value } }).then(() => {
+        _indexKey.value = _input.value + _Favorites_Id.value;
     })
 }
 
 function Home() {
-    _tagsId.value = 0;
+    _Favorites_Id.value = 0;
     _input.value = "";
     _router.push({ name: 'content' }).then(() => {
         _indexKey.value = "";
     });
 }
 
-function GetTagContent(tagsId) {
-    _tagsId.value = tagsId;
-    _router.push({ name: 'content', query: { tagsId } }).then(() => {
-        _indexKey.value = tagsId;
+function GetFavoritesIdContent(Favorites_Id) {
+    _Favorites_Id.value = Favorites_Id;
+    _router.push({ name: 'content', query: { Favorites_Id } }).then(() => {
+        _indexKey.value = Favorites_Id;
     })
 }
 
 function GetFavoritesList() {
     Api.DB.GetFavoritesList(1).then(datas => {
         _FavoritesArr.value = datas;
-    })
+    });
 }
 </script>
 
