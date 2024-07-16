@@ -6,9 +6,18 @@
                     <el-text line-clamp="2" size="large" style="font-weight: bold;">{{ item.title }}</el-text><br>
                     <el-text line-clamp="3" size="small" style="color:rgb(130, 130, 130);width: 100%;">{{ item.content
                         }}</el-text>
-                    <el-image style="width: 70%;height: 70%;" :src="item.cover" :preview-src-list="[item.cover]"
-                        fit="fill" />
+                    <el-image style="width:auto" :src="item.cover" :preview-src-list="[item.cover]" fit="fill">
+                        <template #error>
+                            <div class="image-error">
+                                <el-icon :size="30"><icon-picture /></el-icon>
+                            </div>
+                        </template>
+                    </el-image>
                     <br>
+                    <span style="font-size: 16px;color:rgb(130, 130, 130);">收藏夹：</span>
+                    <el-tag style="max-width: 120px;overflow:hidden">
+                        {{ item.favoritesName ? item.favoritesName : "暂无"
+                        }}</el-tag><br>
                     <el-text size="small">{{ item.date }}</el-text>
                 </el-card>
             </template>
@@ -24,6 +33,7 @@
 import { useRoute } from 'vue-router';
 import { ref, nextTick, onMounted, onUnmounted, watch } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { Picture as IconPicture } from '@element-plus/icons-vue';
 import RightClickMenu from '@/components/RightClickMenu/RightClickMenu.vue';
 import mobileFavorites from './mobileFavorites.vue'
 
@@ -184,7 +194,7 @@ const handleMenuSelect = (optionValue) => {
 
             });
     } else if (optionValue == "5") {
-        _model.value.Id = query.Favorites_Id;
+        _model.value.Id = _WebPage.favorites_Id;
         _model.value.WebPage_Id = _WebPage.id;
         _visible.value = true;
     }
@@ -215,7 +225,7 @@ const handleClickOutside = (bool) => {
 function handleResize(length) {
     let cardLength = length && typeof length == 'number' ? length : document.querySelectorAll('.card').length;
     let container = _container.value.clientWidth;
-    let cardWidth = (cardLength * 300);
+    let cardWidth = (cardLength * 300) - 15;
     if (container - 40 > cardWidth) {
         _content.value.style.width = `${cardWidth}px`;
     } else {
@@ -228,14 +238,7 @@ function GetContent(index) {
     return new Promise((resolve, reject) => {
         Api.DB.GetContent({ index, keyword: query.keyword, FavoritesId: query.Favorites_Id }).then(datas => {
             datas.forEach(data => {
-                _dataArr.value.push({
-                    id: data.Id,
-                    title: data.Title,
-                    uuid: data.UUID,
-                    cover: `${_imagePath}${data.UUID}.png`,
-                    content: data.ContentText,
-                    date: data.CreateDate
-                });
+                _dataArr.value.push(GetData(data));
             });
             if (datas.length > 0) {
                 _index++;
@@ -245,7 +248,18 @@ function GetContent(index) {
         });
     });
 }
-
+function GetData(data) {
+    return {
+        id: data.Id,
+        title: data.Title,
+        uuid: data.UUID,
+        cover: `${_imagePath}${data.UUID}.png`,
+        content: data.ContentText,
+        date: data.CreateDate,
+        favorites_Id: data.Favorites_Id,
+        favoritesName: data.FavoritesName
+    }
+}
 //检测加载
 function loadContent() {
     // 创建一个 IntersectionObserver 实例  
@@ -312,5 +326,15 @@ function closeDialog(bool) {
     text-align: center;
     font-size: 15px;
     color: rgb(177, 177, 177);
+}
+
+.image-error {
+    width: 150px;
+    height: 100px;
+    background-color: rgb(244, 247, 250);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgb(181, 185, 189);
 }
 </style>

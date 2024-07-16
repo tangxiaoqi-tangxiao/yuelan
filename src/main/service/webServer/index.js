@@ -4,7 +4,7 @@ import bodyParser, { json } from 'body-parser';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 import fs from 'fs';
-import db from '@main/utils/sqliteHelper'
+import { InsertWebPage, DelWebPage } from '@main/service/core/webPage'
 import { formatDateTime } from '@main/utils/common'
 import logger from '@main/utils/logger'
 import { resources } from '@main/utils/globalVariable'
@@ -53,34 +53,40 @@ app.post("/SendMhtml", upload.single('file'), async (req, res) => {
     let uuid = `${uuidv4()}_${formatDateTime(undefined, "YYYYMMDDHHmmss")}`;
     try {
         // 插入数据
-        let result = await db.run(`INSERT INTO WebPage VALUES (NULL,?, ?, ?,datetime('now', 'localtime'))`, [uuid, jsonData.title, jsonData.contentText]);
-        let id = result.id;
-        ensureDirExists(path.join(resources, 'WebPage'));
-        // 异步写入文件
-        fs.writeFile(path.join(resources, 'WebPage', `${uuid}.mhtml`), uploadedFile.buffer, (err) => {
-            if (err) {
-                //删除插入数据
-                db.run(`DELETE FROM WebPage WHERE Id = ?`, [id])
-                    .then((result) => {
-                        logger.info(`删除数据，ID：${result.id}`);
-                    })
-                    .catch((err) => {
-                        console.error(err);
+        let result = await InsertWebPage({ uuid, title: jsonData.title, contentText: jsonData.contentText });
+        if (result.changes > 0) {
+            let id = result.id;
+            ensureDirExists(path.join(resources, 'WebPage'));
+            // 异步写入文件
+            fs.writeFile(path.join(resources, 'WebPage', `${uuid}.mhtml`), uploadedFile.buffer, (err) => {
+                if (err) {
+                    //删除插入数据
+                    DelWebPage(id)
+                        .then((result) => {
+                            logger.info(`删除数据，ID：${result.id}`);
+                        })
+                        .catch((err) => {
+                            console.error(err);
+                        });
+                    res.status(200).send('');
+                } else {
+                    ensureDirExists(path.join(resources, 'imgs'));
+                    // 将 Base64 编码的数据写入文件
+                    fs.writeFile(path.join(resources, 'imgs', `${uuid}.png`), jsonData.base64Image, { encoding: 'base64' }, function (err) {
+                        if (err) {
+                            logger.error(`文件保存失败,错误信息：${err}`);
+                        } else {
+                            logger.info('文件保存成功');
+                        }
                     });
-                res.status(200).send('');
-            } else {
-                ensureDirExists(path.join(resources, 'imgs'));
-                // 将 Base64 编码的数据写入文件
-                fs.writeFile(path.join(resources, 'imgs', `${uuid}.png`), jsonData.base64Image, { encoding: 'base64' }, function (err) {
-                    if (err) {
-                        logger.error(`文件保存失败,错误信息：${err}`);
-                    } else {
-                        logger.info('文件保存成功');
-                    }
-                });
-                res.status(200).send('');
-            }
-        });
+                    res.status(200).send('');
+                }
+            });
+        } else {
+            res.status(200).send('');
+            logger.error(`插入数据失败`);
+        }
+
     } catch (err) {
         res.status(200).send('');
         logger.error(`错误信息：${err}`);

@@ -1,9 +1,10 @@
 import { ipcMain, app, Tray, Menu } from "electron";
-import path from 'path'
+import path from 'path';
+import { SaveWindowSize, GetWindowSize } from '@main/service/core/window'
 
 const WM_INITMENU = 0x0116;
 
-function WindowManage(MainWindow) {
+async function WindowManage(MainWindow) {
   //托盘
   {
     // 创建托盘图标
@@ -70,6 +71,20 @@ function WindowManage(MainWindow) {
     MainWindow.hookWindowMessage(WM_INITMENU, () => {
       MainWindow.setEnabled(false);
       MainWindow.setEnabled(true);
+    });
+  }
+
+  //监听窗口大小
+  {
+    let windowSize = await GetWindowSize();
+    if (windowSize) {
+      const [width, height] = JSON.parse(windowSize.Value);
+      MainWindow.setContentSize(width, height);
+    }
+    // 监听窗口大小改变事件  
+    MainWindow.on('resized', () => {
+      const Size = MainWindow.getSize();
+      SaveWindowSize(JSON.stringify(Size));
     });
   }
 }
