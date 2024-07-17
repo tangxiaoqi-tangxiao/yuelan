@@ -13,7 +13,7 @@
             </div>
         </div>
         <div class="button">
-            <el-button @click="$emit('closeDialog',false)">取消</el-button>
+            <el-button @click="$emit('closeDialog', false)">取消</el-button>
             <el-button type="primary" @click="Classification">确定</el-button>
         </div>
     </el-dialog>
@@ -35,7 +35,8 @@ const _dialogTableVisible = ref(true);
 const _input = ref(null);
 const _datas = ref([]);
 
-let _Id = ref(props.Id);
+let _Id = ref(props.Id);//文件夹id
+let _favoritesName = ref("");//文件夹名称
 let _select_List = ref([]);
 
 onMounted(() => {
@@ -77,7 +78,9 @@ function select(index) {
         e.select = false;
     });
     _select_List.value[index].select = true;
-    _Id.value = _select_List.value[index].Id;
+    let model = _select_List.value[index];
+    _Id.value = model.Id;
+    _favoritesName.value = model.Name;
 }
 
 function default_select() {
@@ -91,13 +94,17 @@ function default_select() {
 }
 
 function Classification() {
-    if (_Id.value && _Id .value> 0) {
+    if (_Id.value && _Id.value > 0) {
         Api.DB.Classification({
             Favorites_Id: _Id.value,
             WebPage_Id: props.WebPage_Id
         }).then(result => {
             if (result.code == 0) {
-                emit("closeDialog",true);
+                emit("closeDialog", true, {
+                    webPageId: props.WebPage_Id,
+                    favoritesId: _Id.value,
+                    favoritesName: _favoritesName.value
+                });
                 ElMessage({
                     message: '移动成功',
                     type: 'success',

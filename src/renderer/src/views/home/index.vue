@@ -51,8 +51,8 @@
                         <WindowButton></WindowButton>
                     </div>
                 </div>
-                <div style="margin-left: 50px;margin-top: 10px;">
-                    <el-input v-model="_input" @keyup.enter="Submit" :suffix-icon="Search" style="width: 300px"
+                <div style="margin-left: 20px;margin-top: 10px;">
+                    <el-input v-model="_input" size="large" @keyup.enter="Submit" :suffix-icon="Search" style="width: 400px"
                         placeholder="搜索网页" />
                     <span style="float: right;margin-right: 20px;">
                         <el-button type="primary" plain>上传网页</el-button>
@@ -226,8 +226,7 @@ function GetFavoritesList() {
 #NewPage {
     overflow-y: auto;
     width: 100%;
-    height: calc(100% - 99px);
-    ;
+    height: calc(100% - 107px);
 }
 
 .background-menu:hover {

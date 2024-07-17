@@ -298,8 +298,20 @@ function isInViewPortOfTwo(el) {
 }
 
 //关闭移动收藏夹窗口
-function closeDialog(bool) {
+function closeDialog(bool, model) {
     _visible.value = false;
+    //如果移动成功更新数据
+    if (bool && model) {
+        //更新数据
+        for (let i = _dataArr.value.length - 1; i >= 0; i--) {
+            let value = _dataArr.value[i];
+            if (value.id == model.webPageId) {
+                value.favorites_Id = model.favoritesId;
+                value.favoritesName = model.favoritesName;
+            }
+        }
+    }
+    //如果是不是最近选项不删除
     if (bool && query.Favorites_Id > 0) {
         //同步删除数组元素
         for (let i = _dataArr.value.length - 1; i >= 0; i--) {

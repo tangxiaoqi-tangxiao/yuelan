@@ -41,7 +41,7 @@ async function GetWebPageList(data) {
         // 查询数据
         row = await db.pagedAll(sql, [keyword_queryParam, keyword_queryParam, keyword_queryParam], data.index, undefined);
     } else if (data.FavoritesId && data.FavoritesId > 0) {
-        let sql = `SELECT * FROM WebPage WHERE Favorites_Id =? ORDER BY Id DESC`;
+        let sql = `SELECT * FROM WebPage WHERE Favorites_Id =? ORDER BY UpdateDate DESC`;
         // 查询数据
         row = await db.pagedAll(sql, [data.FavoritesId], data.index, undefined);
     } else {
@@ -98,7 +98,7 @@ async function RenameTitleWebPage(id, title) {
 
 //设置文件夹
 async function Classification(WebPage_Id, Favorites_Id) {
-    let sql = `UPDATE WebPage SET Favorites_Id=? WHERE Id=?`;
+    let sql = `UPDATE WebPage SET Favorites_Id=?,UpdateDate=datetime('now', 'localtime') WHERE Id=?`;
     let result = await db.run(sql, [Favorites_Id, WebPage_Id]);
     return result;
 }
