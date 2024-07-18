@@ -1,9 +1,12 @@
 <template>
   <div ref="contextMenu" class="context-menu" :style="menuStyle" @click="closeMenu">
     <ul>
-      <li v-for="option in options" :key="option.value" @click="handleClick(option.value)">
-        {{ option.label }}
-      </li>
+      <template v-for="option in options" :key="option.value">
+        <li v-if="option.value != ''" @click="handleClick(option.value)">
+          {{ option.label }}
+        </li>
+        <hr v-else style=" border:1px solid rgb(244, 244, 245);">
+      </template>
     </ul>
   </div>
 </template>
@@ -71,6 +74,8 @@ onMounted(() => {
   background: white;
   border: 1px solid #ccc;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 7px;
+  overflow: hidden;
 }
 
 .context-menu ul {

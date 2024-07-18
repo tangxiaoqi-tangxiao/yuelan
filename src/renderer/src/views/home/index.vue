@@ -2,7 +2,7 @@
     <div id="Home">
         <div id="Navigation">
             <div class="Menu">
-                <el-menu active-text-color="#409eff" background-color="rgb(239, 239, 242)" default-active="1"
+                <el-menu active-text-color="#409eff" background-color="rgb(243, 243, 243)" default-active="1"
                     text-color="rgb(84, 84, 93)">
                     <el-menu-item @contextmenu.prevent="showMenu($event)" class="background-menu" aria-selected="true"
                         index="1" @click="Home">
@@ -23,8 +23,9 @@
                             <span>收藏夹</span>
                         </template>
                         <template v-for="(item, index) in _FavoritesArr">
-                            <el-menu-item @contextmenu.prevent="showMenu($event)" @click="GetFavoritesIdContent(item.Id)"
-                                class="background-menu" :index="`1-${index + 1}`">
+                            <el-menu-item @contextmenu.prevent="showMenu($event)"
+                                @click="GetFavoritesIdContent(item.Id)" class="background-menu"
+                                :index="`1-${index + 1}`">
                                 <el-icon>
                                     <Tickets />
                                 </el-icon>
@@ -33,11 +34,35 @@
                             </el-menu-item>
                         </template>
                     </el-sub-menu>
-                    <el-menu-item @contextmenu.prevent="showMenu($event)" class="background-menu" index="3">
+                    <el-menu-item disabled @contextmenu.prevent="showMenu($event)" class="background-menu" index="3">
                         <el-icon>
                             <PriceTag />
                         </el-icon>
                         <span>标签</span>
+                    </el-menu-item>
+                </el-menu>
+            </div>
+            <!-- 设置 -->
+            <div class="setUp">
+                <el-menu active-text-color="#409eff" background-color="rgb(243, 243, 243)" default-active="1"
+                    text-color="rgb(84, 84, 93)">
+                    <el-menu-item @contextmenu.prevent="showMenu($event)" class="background-menu" aria-selected="true"
+                        index="2" @click="Home">
+                        <el-icon>
+                            <el-icon>
+                                <Tools />
+                            </el-icon>
+                        </el-icon>
+                        <span>设置</span>
+                    </el-menu-item>
+                    <el-menu-item @contextmenu.prevent="showMenu($event)" class="background-menu" aria-selected="true"
+                        index="1" @click="Home">
+                        <el-icon>
+                            <el-icon>
+                                <InfoFilled />
+                            </el-icon>
+                        </el-icon>
+                        <span>关于</span>
                     </el-menu-item>
                 </el-menu>
             </div>
@@ -52,8 +77,8 @@
                     </div>
                 </div>
                 <div style="margin-left: 20px;margin-top: 10px;">
-                    <el-input v-model="_input" size="large" @keyup.enter="Submit" :suffix-icon="Search" style="width: 400px"
-                        placeholder="搜索网页" />
+                    <el-input v-model="_input" size="large" @keyup.enter="Submit" :suffix-icon="Search"
+                        style="width: 400px" placeholder="搜索网页" />
                     <span style="float: right;margin-right: 20px;">
                         <el-button type="primary" plain>上传网页</el-button>
                     </span>
@@ -69,7 +94,7 @@
 <script setup>
 import { ref, onUnmounted, onMounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
-import { PriceTag, House, Collection, Search, Tickets } from '@element-plus/icons-vue';
+import { PriceTag, House, Collection, Search, Tickets, InfoFilled, Tools } from '@element-plus/icons-vue';
 import WindowButton from '@/components/WindowButton/WindowButton.vue';
 import RightClickMenu from '@/components/RightClickMenu/RightClickMenu.vue';
 
@@ -178,19 +203,45 @@ function GetFavoritesList() {
 #Navigation {
     width: 210px;
     height: 100%;
-    background-color: rgb(239, 239, 242);
+    /* background-color: rgb(239, 239, 242); */
+    background-color: rgb(243, 243, 243);
     font-size: 15px;
     color: rgb(0, 0, 0);
     display: flex;
     flex-direction: column;
+    -webkit-user-select: none;
     /* 可拖拽 */
     /* -webkit-app-region: drag; */
 }
 
 .Menu {
     margin-top: 90px;
+    overflow-y: auto;
     /* 不可拖拽 */
-    -webkit-app-region: no-drag;
+    /* -webkit-app-region: no-drag; */
+}
+
+/* 滚动条样式 */
+.Menu::-webkit-scrollbar {
+    width: 8px;
+    /* 滚动条的宽度 */
+}
+
+.Menu::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    /* 滚动条轨道的颜色 */
+}
+
+.Menu::-webkit-scrollbar-thumb {
+    background: #888;
+    /* 滚动条的颜色 */
+    border-radius: 4px;
+    /* 滚动条圆角 */
+}
+
+.Menu::-webkit-scrollbar-thumb:hover {
+    background: #555;
+    /* 悬停时滚动条的颜色 */
 }
 
 #Second {
@@ -219,6 +270,8 @@ function GetFavoritesList() {
 
 #DragTitle {
     width: 100%;
+    /* background-color:rgb(241, 240, 240) ; */
+    border-bottom: 1px solid rgba(230, 229, 229, 0.425);
     /* 可拖拽 */
     -webkit-app-region: drag;
 }
@@ -226,14 +279,21 @@ function GetFavoritesList() {
 #NewPage {
     overflow-y: auto;
     width: 100%;
-    height: calc(100% - 107px);
+    height: calc(100% - 108px);
 }
 
 .background-menu:hover {
-    background-color: rgba(197, 197, 197, 0.5);
+    /* background-color: rgba(197, 197, 197, 0.5); */
+    background-color: rgba(226, 225, 225, 0.5);
 }
 
 .Menu /deep/.el-sub-menu__title:hover {
-    background-color: rgba(197, 197, 197, 0.5);
+    background-color: rgba(226, 225, 225, 0.5);
+}
+
+.setUp {
+    width: 100%;
+    margin-top: auto;
+    background-color: bisque;
 }
 </style>

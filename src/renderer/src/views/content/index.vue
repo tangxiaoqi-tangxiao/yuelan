@@ -59,10 +59,11 @@ const _menuY = ref(0);
 const _menuOptions = ref([
     { label: '使用浏览器打开', value: '1' },
     { label: '导出', value: '2' },
-    { label: '删除', value: '3' },
-    { label: '重命名', value: '4' },
     { label: '移动', value: '5' },
-    { label: '标签', value: '6' },
+    // { label: '标签', value: '6' },
+    { label: '', value: '' },
+    { label: '重命名', value: '4' },
+    { label: '删除', value: '3' }
 ]);
 
 let _index = 1;

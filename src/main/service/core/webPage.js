@@ -22,7 +22,7 @@ function initialization() {
 }
 
 async function InsertWebPage(params) {
-    let result = await db.run(`INSERT INTO WebPage VALUES (NULL,NULL,?, ?, ?,datetime('now', 'localtime'))`, [params.uuid, params.title, params.contentText]);
+    let result = await db.run(`INSERT INTO WebPage VALUES (NULL,NULL,?, ?, ?,datetime('now', 'localtime'),NULL)`, [params.uuid, params.title, params.contentText]);
     return result;
 }
 
