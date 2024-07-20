@@ -2,8 +2,8 @@
     <div id="Home">
         <div id="Navigation">
             <div class="Menu">
-                <el-menu active-text-color="#409eff" background-color="rgb(243, 243, 243)" default-active="1"
-                    text-color="rgb(84, 84, 93)">
+                <el-menu active-text-color="#409eff" background-color="rgb(243, 243, 243)" :router="true"
+                    :default-active="_Menu" @select="FavoritesSelect" text-color="rgb(84, 84, 93)">
                     <el-menu-item @contextmenu.prevent="showMenu($event)" class="background-menu" aria-selected="true"
                         index="1" @click="Home">
                         <el-icon>
@@ -23,9 +23,8 @@
                             <span>收藏夹</span>
                         </template>
                         <template v-for="(item, index) in _FavoritesArr">
-                            <el-menu-item @contextmenu.prevent="showMenu($event)"
-                                @click="GetFavoritesIdContent(item.Id)" class="background-menu"
-                                :index="`1-${index + 1}`">
+                            <el-menu-item @contextmenu.prevent="showMenu($event)" @click="toggleFavorites(item.Id)"
+                                class="background-menu" :index="`1-${index + 1}`">
                                 <el-icon>
                                     <Tickets />
                                 </el-icon>
@@ -44,10 +43,9 @@
             </div>
             <!-- 设置 -->
             <div class="setUp">
-                <el-menu active-text-color="#409eff" background-color="rgb(243, 243, 243)" default-active="1"
-                    text-color="rgb(84, 84, 93)">
-                    <el-menu-item @contextmenu.prevent="showMenu($event)" class="background-menu" aria-selected="true"
-                        index="2" @click="Home">
+                <el-menu active-text-color="#409eff" background-color="rgb(243, 243, 243)" @select="SetUpSelect"
+                    :router="true" :default-active="_setUp" text-color="rgb(84, 84, 93)">
+                    <el-menu-item @click="toggleSetUp" class="background-menu" aria-selected="true" index="1">
                         <el-icon>
                             <el-icon>
                                 <Tools />
@@ -55,8 +53,7 @@
                         </el-icon>
                         <span>设置</span>
                     </el-menu-item>
-                    <el-menu-item @contextmenu.prevent="showMenu($event)" class="background-menu" aria-selected="true"
-                        index="1" @click="Home">
+                    <el-menu-item @click="toggleSetUp" class="background-menu" aria-selected="true" index="2">
                         <el-icon>
                             <el-icon>
                                 <InfoFilled />
@@ -104,6 +101,8 @@ const _input = ref(null);
 const _FavoritesArr = ref([]);
 const _indexKey = ref("");
 const _Favorites_Id = ref(0);
+const _Menu = ref("1");
+const _setUp = ref("");
 //右键菜单
 const _menuVisible = ref(false);
 const _menuX = ref(0);
@@ -119,20 +118,20 @@ onMounted(() => {
     GetFavoritesList();
 
     //鼠标右键菜单取消事件
-    document.querySelector(".Menu .el-sub-menu__title").addEventListener("contextmenu", showMenu);
+    document.querySelector(".Menu .el-sub-menu__title")?.addEventListener("contextmenu", showMenu);
     window.addEventListener('click', handleClickOutside(false));//左键
     window.addEventListener('contextmenu', handleClickOutside(true));//右键
     window.addEventListener('blur', handleClickOutside(false));
-    document.querySelector("#NewPage").addEventListener('scroll', handleClickOutside(false));
+    document.querySelector("#NewPage")?.addEventListener('scroll', handleClickOutside(false));
 });
 
 onUnmounted(() => {
     //鼠标右键菜单取消事件
-    document.querySelector(".Menu .el-sub-menu__title").removeEventListener('contextmenu', showMenu);
+    document.querySelector(".Menu .el-sub-menu__title")?.removeEventListener('contextmenu', showMenu);
     window.removeEventListener('click', handleClickOutside(false));//左键
     window.removeEventListener('contextmenu', handleClickOutside(true));//右键
     window.removeEventListener('blur', handleClickOutside(false));
-    document.querySelector("#NewPage").removeEventListener('scroll', handleClickOutside(false));
+    document.querySelector("#NewPage")?.removeEventListener('scroll', handleClickOutside(false));
 });
 
 //打开右键菜单
@@ -178,11 +177,27 @@ function Home() {
     });
 }
 
-function GetFavoritesIdContent(Favorites_Id) {
+function toggleFavorites(Favorites_Id) {
     _Favorites_Id.value = Favorites_Id;
     _router.push({ name: 'content', query: { Favorites_Id } }).then(() => {
         _indexKey.value = Favorites_Id;
-    })
+    });
+}
+
+function FavoritesSelect(index) {
+    _Menu.value = index;
+    _setUp.value = "";
+}
+
+function toggleSetUp() {
+    _router.push({ name: 'content' }).then(() => {
+        _indexKey.value = "";
+    });
+}
+
+function SetUpSelect(index) {
+    _setUp.value = index;
+    _Menu.value = "";
 }
 
 function GetFavoritesList() {

@@ -86,7 +86,7 @@ onMounted(() => {
     window.addEventListener('click', handleClickOutside(false));//左键
     window.addEventListener('contextmenu', handleClickOutside(true));//右键
     window.addEventListener('blur', handleClickOutside(false));
-    document.querySelector("#NewPage").addEventListener('scroll', handleClickOutside(false));
+    document.querySelector("#NewPage")?.addEventListener('scroll', handleClickOutside(false));
 });
 
 // 组件卸载前移除监听器
@@ -97,7 +97,7 @@ onUnmounted(() => {
     window.removeEventListener('click', handleClickOutside(false));//左键
     window.removeEventListener('contextmenu', handleClickOutside(true));//右键
     window.removeEventListener('blur', handleClickOutside(false));
-    document.querySelector("#NewPage").removeEventListener('scroll', handleClickOutside(false));
+    document.querySelector("#NewPage")?.removeEventListener('scroll', handleClickOutside(false));
 });
 
 //打开右键菜单
