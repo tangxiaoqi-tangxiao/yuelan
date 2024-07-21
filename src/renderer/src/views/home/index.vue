@@ -73,7 +73,7 @@
                         <WindowButton></WindowButton>
                     </div>
                 </div>
-                <div style="margin-left: 20px;margin-top: 10px;">
+                <div v-if="_SearchShow" style="margin-left: 20px;margin-top: 10px;">
                     <el-input v-model="_input" size="large" @keyup.enter="Submit" :suffix-icon="Search"
                         style="width: 400px" placeholder="搜索网页" />
                     <span style="float: right;margin-right: 20px;">
@@ -94,6 +94,7 @@ import { useRouter } from 'vue-router';
 import { PriceTag, House, Collection, Search, Tickets, InfoFilled, Tools } from '@element-plus/icons-vue';
 import WindowButton from '@/components/WindowButton/WindowButton.vue';
 import RightClickMenu from '@/components/RightClickMenu/RightClickMenu.vue';
+import { fa } from 'element-plus/es/locales.mjs';
 
 const _router = useRouter();
 
@@ -103,6 +104,7 @@ const _indexKey = ref("");
 const _Favorites_Id = ref(0);
 const _Menu = ref("1");
 const _setUp = ref("");
+const _SearchShow = ref(true);
 //右键菜单
 const _menuVisible = ref(false);
 const _menuX = ref(0);
@@ -187,6 +189,7 @@ function toggleFavorites(Favorites_Id) {
 function FavoritesSelect(index) {
     _Menu.value = index;
     _setUp.value = "";
+    _SearchShow.value = true;
 }
 
 function toggleSetUp() {
@@ -198,6 +201,7 @@ function toggleSetUp() {
 function SetUpSelect(index) {
     _setUp.value = index;
     _Menu.value = "";
+    _SearchShow.value = false;
 }
 
 function GetFavoritesList() {
@@ -263,6 +267,10 @@ function SetindexKey(value) {
     /* 悬停时滚动条的颜色 */
 }
 
+.Menu>>>.el-menu--vertical {
+    border-right: 0;
+}
+
 #Second {
     margin-top: auto;
     height: 91px;
@@ -314,5 +322,9 @@ function SetindexKey(value) {
     width: 100%;
     margin-top: auto;
     background-color: bisque;
+}
+
+.setUp>>>.el-menu--vertical {
+    border-right: 0;
 }
 </style>
