@@ -6,6 +6,7 @@ import { GetWebPage, DelWebPage as DelWebPageDB, RenameTitleWebPage as RenameTit
 import { sanitizeFilename, getFileVersionedName } from '@main/utils/common.js';
 
 const WebPagePath = path.join(resources, "WebPage");
+const ImgsPath = path.join(resources, "Imgs");
 
 function initialization() {
     ipcMain.handle("index:RightClickMenu:OpenWebPage", (event, UUID) => openWebPage(UUID));
@@ -106,6 +107,10 @@ async function DelWebPage(id) {
     let result = await DelWebPageDB(id);
     if (result.changes > 0) {
         fse.unlink(path.join(WebPagePath, result.UUID + ".mhtml"), (err) => {
+            if (err) return console.error(err);
+            console.log("删除成功", result.UUID);
+        });
+        fse.unlink(path.join(ImgsPath, result.UUID + ".png"), (err) => {
             if (err) return console.error(err);
             console.log("删除成功", result.UUID);
         });

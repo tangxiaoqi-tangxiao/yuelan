@@ -11,6 +11,8 @@ import { resources } from '@main/utils/globalVariable'
 
 //全局变量
 const app = express();
+const WebPagePath = path.join(resources, "WebPage");
+const ImgsPath = path.join(resources, "Imgs");
 
 // 解析 JSON 请求体
 app.use(bodyParser.json({ limit: '2gb' }));
@@ -56,9 +58,9 @@ app.post("/SendMhtml", upload.single('file'), async (req, res) => {
         let result = await InsertWebPage({ uuid, title: jsonData.title, contentText: jsonData.contentText });
         if (result.changes > 0) {
             let id = result.id;
-            ensureDirExists(path.join(resources, 'WebPage'));
+            ensureDirExists(WebPagePath);
             // 异步写入文件
-            fs.writeFile(path.join(resources, 'WebPage', `${uuid}.mhtml`), uploadedFile.buffer, (err) => {
+            fs.writeFile(path.join(WebPagePath, `${uuid}.mhtml`), uploadedFile.buffer, (err) => {
                 if (err) {
                     //删除插入数据
                     DelWebPage(id)
@@ -68,11 +70,11 @@ app.post("/SendMhtml", upload.single('file'), async (req, res) => {
                         .catch((err) => {
                             console.error(err);
                         });
-                    res.status(200).send('');
+                    res.status(500).send('');
                 } else {
-                    ensureDirExists(path.join(resources, 'imgs'));
+                    ensureDirExists(ImgsPath);
                     // 将 Base64 编码的数据写入文件
-                    fs.writeFile(path.join(resources, 'imgs', `${uuid}.png`), jsonData.base64Image, { encoding: 'base64' }, function (err) {
+                    fs.writeFile(path.join(ImgsPath, `${uuid}.png`), jsonData.base64Image, { encoding: 'base64' }, function (err) {
                         if (err) {
                             logger.error(`文件保存失败,错误信息：${err}`);
                         } else {
@@ -83,12 +85,12 @@ app.post("/SendMhtml", upload.single('file'), async (req, res) => {
                 }
             });
         } else {
-            res.status(200).send('');
+            res.status(500).send('');
             logger.error(`插入数据失败`);
         }
 
     } catch (err) {
-        res.status(200).send('');
+        res.status(500).send('');
         logger.error(`错误信息：${err}`);
     }
 });

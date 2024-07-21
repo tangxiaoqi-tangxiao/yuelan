@@ -1,6 +1,5 @@
 import sqlite3 from 'sqlite3';
-import path from 'path';
-import yuelan_db3 from '../../../resources/data/yuelan.db3?asset&asarUnpack'
+import yuelan_db3 from '../../../resources/Data/yuelan.db3?asset&asarUnpack'
 
 const sqlite = sqlite3.verbose();
 

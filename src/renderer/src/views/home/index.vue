@@ -165,7 +165,7 @@ const handleClickOutside = (bool) => {
 
 function Submit() {
     _router.push({ name: 'content', query: { keyword: _input.value, Favorites_Id: _Favorites_Id.value } }).then(() => {
-        _indexKey.value = _input.value + _Favorites_Id.value;
+        SetindexKey("1_" + _input.value + _Favorites_Id.value);
     })
 }
 
@@ -173,14 +173,14 @@ function Home() {
     _Favorites_Id.value = 0;
     _input.value = "";
     _router.push({ name: 'content' }).then(() => {
-        _indexKey.value = "";
+        SetindexKey(0);
     });
 }
 
 function toggleFavorites(Favorites_Id) {
     _Favorites_Id.value = Favorites_Id;
     _router.push({ name: 'content', query: { Favorites_Id } }).then(() => {
-        _indexKey.value = Favorites_Id;
+        SetindexKey("2_" + Favorites_Id);
     });
 }
 
@@ -190,8 +190,8 @@ function FavoritesSelect(index) {
 }
 
 function toggleSetUp() {
-    _router.push({ name: 'content' }).then(() => {
-        _indexKey.value = "";
+    _router.push({ name: 'setUp' }).then(() => {
+        SetindexKey(3);
     });
 }
 
@@ -204,6 +204,10 @@ function GetFavoritesList() {
     Api.DB.GetFavoritesList(1).then(datas => {
         _FavoritesArr.value = datas;
     });
+}
+
+function SetindexKey(value) {
+    _indexKey.value = value;
 }
 </script>
 
