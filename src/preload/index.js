@@ -28,6 +28,10 @@ const Api = {
   //     return null;
   //   }
   // },
+  System:{
+    BootStart:(data)=>ipcRenderer.invoke('index:System:BootStart', data),
+    GetBootStart:()=>ipcRenderer.invoke('index:System:GetBootStart'),
+  },
   DB: {
     GetContent: (data) => ipcRenderer.invoke('index:DB:GetWebPageList', data),
     GetFavoritesList: (data) => ipcRenderer.invoke('index:DB:GetFavoritesList', data),

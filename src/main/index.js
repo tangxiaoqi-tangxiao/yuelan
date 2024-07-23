@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow} from "electron";
+import { app, shell, BrowserWindow } from "electron";
 import { join } from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
@@ -91,7 +91,11 @@ function createWindow() {
 
   //等待渲染进程加载完成显示窗口
   MainWindow.on("ready-to-show", () => {
-    MainWindow.show();
+    //获取是否开机启动
+    const { openAtLogin } = app.getLoginItemSettings();
+    if (!openAtLogin) {
+      MainWindow.show();
+    }
   });
 
   // Electron 应用中拦截窗口打开请求，并将其重定向到外部浏览器，而不是在应用内部创建新的窗口
