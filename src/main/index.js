@@ -11,6 +11,9 @@ import Core from '@main/service/core/index.js'
 //全局变量
 let MainWindow = null;
 
+//禁用GPU加速
+app.disableHardwareAcceleration();
+
 //单例
 appSingleton();
 
@@ -34,7 +37,7 @@ function initialize() {
     createWindowAndWindowEvent();
 
     //创建资源窗口
-    RenderWindows.createResourceWin();
+    // RenderWindows.createResourceWin();
 
     //运行核心
     Core();
@@ -58,6 +61,8 @@ function createWindowAndWindowEvent() {
   MainWindow = createWindow();
   //处理窗口事件
   WindowManage(MainWindow);
+  // 暴露全局窗口对象
+  global.MainWindow = MainWindow;
 }
 
 //创建窗口

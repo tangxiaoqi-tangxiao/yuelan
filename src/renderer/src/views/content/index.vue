@@ -167,7 +167,7 @@ const handleMenuSelect = (optionValue) => {
 
             });
     } else if (optionValue == "4") {
-        ElMessageBox.prompt('重命名网页文件', '标题', {
+        ElMessageBox.prompt('重命名网页文件', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             inputValue: _WebPage.title

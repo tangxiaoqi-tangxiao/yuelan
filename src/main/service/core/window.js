@@ -48,4 +48,10 @@ async function SaveBootStart(bool) {
     }
 }
 
-export { initialization, SaveWindowSize, GetWindowSize ,GetBootStart,SaveBootStart};
+function WindowMessage(event, data) {
+    if (global.MainWindow) {
+        global.MainWindow.webContents.send(event, data)
+    }
+}
+
+export { initialization, SaveWindowSize, GetWindowSize, GetBootStart, SaveBootStart, WindowMessage };

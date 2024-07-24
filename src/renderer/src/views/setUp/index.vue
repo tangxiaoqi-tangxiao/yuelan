@@ -2,7 +2,7 @@
     <div class="background">
         <h4 style="margin-left: 50px;">系统设置</h4>
         <el-divider />
-        <div style="width: 80%;margin: 0 auto;margin-top: 50px;">
+        <div style="width: 80%;margin: 0 auto;">
             <div style="display: flex; flex-direction: column;">
                 <div style="display: flex;align-items: center;">
                     <span>开机自启动</span>

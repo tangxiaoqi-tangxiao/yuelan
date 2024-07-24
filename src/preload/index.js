@@ -28,9 +28,12 @@ const Api = {
   //     return null;
   //   }
   // },
-  System:{
-    BootStart:(data)=>ipcRenderer.invoke('index:System:BootStart', data),
-    GetBootStart:()=>ipcRenderer.invoke('index:System:GetBootStart'),
+  WebContents: {
+    MonitorFavorites: (callback) => ipcRenderer.on('MonitorFavorites', (_event, value) => callback(value))
+  },
+  System: {
+    BootStart: (data) => ipcRenderer.invoke('index:System:BootStart', data),
+    GetBootStart: () => ipcRenderer.invoke('index:System:GetBootStart'),
   },
   DB: {
     GetContent: (data) => ipcRenderer.invoke('index:DB:GetWebPageList', data),
@@ -45,7 +48,8 @@ const Api = {
     exportWebPage: (id) => ipcRenderer.invoke("index:RightClickMenu:exportWebPage", id),
     DelWebPage: (id) => ipcRenderer.invoke("index:RightClickMenu:DelWebPage", id),
     RenameTitleWebPage: (data) => ipcRenderer.invoke("index:RightClickMenu:RenameTitleWebPage", data),
-    exportWebPageList: (UUID) => ipcRenderer.send("index_RightClickMenu_exportWebPageList", UUID),
+    exportWebPageList: (UUID) => ipcRenderer.send("index:RightClickMenu:exportWebPageList", UUID),
+    InsertFavorites: (data) => ipcRenderer.invoke("index:RightClickMenu:InsertFavorites", data),
   }
 };
 

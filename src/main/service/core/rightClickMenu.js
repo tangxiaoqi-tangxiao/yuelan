@@ -3,6 +3,8 @@ import path from 'path';
 import { resources } from '@main/utils/globalVariable.js';
 import fse from 'fs-extra';
 import { GetWebPage, DelWebPage as DelWebPageDB, RenameTitleWebPage as RenameTitleWebPageDB } from './webPage';
+import { InsertFavorites as InsertFavoritesDB } from './favorites';
+import { WindowMessage } from './window';
 import { sanitizeFilename, getFileVersionedName } from '@main/utils/common.js';
 
 const WebPagePath = path.join(resources, "WebPage");
@@ -13,6 +15,8 @@ function initialization() {
     ipcMain.handle("index:RightClickMenu:exportWebPage", async (event, id) => exportWebPage(id));
     ipcMain.handle("index:RightClickMenu:DelWebPage", async (event, id) => DelWebPage(id));
     ipcMain.handle("index:RightClickMenu:RenameTitleWebPage", async (event, data) => RenameTitleWebPage(data.id, data.title));
+    ipcMain.handle("index:RightClickMenu:exportWebPageList", async (event, data) => exportWebPageList(data));
+    ipcMain.handle('index:RightClickMenu:InsertFavorites', async (event, data) => InsertFavorites(data));
 }
 
 //使用浏览器打开web文件
@@ -86,20 +90,18 @@ function exportWebPage(id) {
 }
 
 //导出web文件列表
-function exportWebPageList() {
-    ipcMain.on("index_RightClickMenu_exportWebPageList", (event, UUID) => {
-        // 显示文件夹选择器对话框
-        let DialogArr = dialog.showOpenDialogSync({
-            properties: ['openDirectory'] // 只允许选择文件夹
-        });
-        if (DialogArr) {
-            const DialogPath = DialogArr[0];
-            fse.copy(path.join(WebPagePath), path.join(DialogPath), err => {
-                if (err) return console.error(err)
-                console.log('success!')
-            }); // copies file
-        }
+function exportWebPageList(UUID) {
+    // 显示文件夹选择器对话框
+    let DialogArr = dialog.showOpenDialogSync({
+        properties: ['openDirectory'] // 只允许选择文件夹
     });
+    if (DialogArr) {
+        const DialogPath = DialogArr[0];
+        fse.copy(path.join(WebPagePath, UUID + ".mhtml"), path.join(DialogPath), err => {
+            if (err) return console.error(err)
+            console.log('success!');
+        }); // copies file
+    }
 }
 
 //删除web页面
@@ -144,4 +146,21 @@ async function RenameTitleWebPage(id, title) {
     };
 }
 
+//新建收藏夹
+async function InsertFavorites(data) {
+    let result = await InsertFavoritesDB(data);
+    if (result.changes > 0) {
+        WindowMessage("MonitorFavorites");
+        return {
+            code: 0,
+            data: null,
+            message: ""
+        };
+    }
+    return {
+        code: 1,
+        data: null,
+        message: "更新收藏夹失败"
+    };
+}
 export { initialization, openWebPage, exportWebPage, exportWebPageList };

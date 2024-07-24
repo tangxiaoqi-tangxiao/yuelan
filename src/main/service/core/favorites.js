@@ -21,5 +21,10 @@ async function GetFavoritesList(data) {
     // 发送响应回渲染进程
     return row;
 }
+//创建收藏夹
+async function InsertFavorites(data) {
+    let result = await db.run(`INSERT INTO Favorites VALUES(NULL,?,datetime('now', 'localtime'))`, [data]);
+    return result;
+}
 
-export { initialization, GetFavoritesList }
+export { initialization, GetFavoritesList,InsertFavorites }

@@ -42,7 +42,7 @@ function Close() {
 
 Api.Winbutton.UpdateIcon((data)=>{
     Reduction.value = data
-})
+});
 </script>
 
 <style scoped>

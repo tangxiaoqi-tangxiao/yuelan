@@ -91,6 +91,7 @@
 <script setup>
 import { ref, onUnmounted, onMounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { PriceTag, House, Collection, Search, Tickets, InfoFilled, Tools } from '@element-plus/icons-vue';
 import WindowButton from '@/components/WindowButton/WindowButton.vue';
 import RightClickMenu from '@/components/RightClickMenu/RightClickMenu.vue';
@@ -109,18 +110,14 @@ const _SearchShow = ref(true);
 const _menuVisible = ref(false);
 const _menuX = ref(0);
 const _menuY = ref(0);
-const _menuOptions = ref([
-    { label: '导出', value: '1' },
-    { label: '选项 2', value: 'option2' },
-    { label: '清空', value: '3' }
-]);
+const _menuOptions = ref([]);
 
 onMounted(() => {
     Home();
     GetFavoritesList();
 
-    //鼠标右键菜单取消事件
-    document.querySelector(".Menu .el-sub-menu__title")?.addEventListener("contextmenu", showMenu);
+    //鼠标右键菜单事件
+    document.querySelector(".Menu .el-sub-menu__title")?.addEventListener("contextmenu", (event) => { showMenu(event, 2) });
     window.addEventListener('click', handleClickOutside(false));//左键
     window.addEventListener('contextmenu', handleClickOutside(true));//右键
     window.addEventListener('blur', handleClickOutside(false));
@@ -137,18 +134,50 @@ onUnmounted(() => {
 });
 
 //打开右键菜单
-const showMenu = function (event) {
+const showMenu = function (event, index) {
     event.preventDefault();
     _menuVisible.value = false;
     nextTick(() => {
         _menuX.value = event.clientX;
         _menuY.value = event.clientY;
-        _menuVisible.value = true;
+
+        switch (index) {
+            case 1:
+
+                break;
+            case 2:
+                _menuOptions.value = [
+                    { label: '新建收藏夹', value: { index: 2, value: 1 } },
+                ];
+                _menuVisible.value = true;
+                break;
+            default:
+                _menuOptions.value = [];
+                _menuVisible.value = false;
+                break;
+        }
     });
 }
 //触发菜单事件
 const handleMenuSelect = (optionValue) => {
-    console.log(`父组件处理: 点击了 ${optionValue}`);
+    const index = optionValue.index;
+    const value = optionValue.value;
+    switch (index) {
+        case 2:
+            switch (value) {
+                case 1:
+                    NewFolder();
+                    break;
+
+                default:
+                    break;
+            }
+            break;
+
+        default:
+            break;
+    }
+    console.log(`父组件处理: 点击了`, optionValue);
     _menuVisible.value = false;
 }
 //关闭右键菜单
@@ -203,16 +232,43 @@ function SetUpSelect(index) {
     _Menu.value = "";
     _SearchShow.value = false;
 }
-
+//获取收藏夹
 function GetFavoritesList() {
     Api.DB.GetFavoritesList(1).then(datas => {
         _FavoritesArr.value = datas;
     });
 }
+//监听收藏夹更新
+Api.WebContents.MonitorFavorites((data) => {
+    GetFavoritesList();
+});
 
 function SetindexKey(value) {
     _indexKey.value = value;
 }
+
+function NewFolder() {
+    ElMessageBox.prompt('收藏夹名称：', '', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+    })
+        .then(({ value }) => {
+            Api.RightClickMenu.InsertFavorites(value).then(result => {
+                console.log(result)
+                if (result.code == 0) {
+                    ElMessage({
+                        message: '创建收藏夹成功',
+                        type: 'success',
+                    });
+                } else {
+                    ElMessage.error("创建收藏夹失败");
+                }
+            })
+        }).catch(err => {
+
+        });
+}
+
 </script>
 
 <style scoped>
