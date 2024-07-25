@@ -69,7 +69,7 @@ const _menuOptions = ref([
 let _index = 1;
 let _WebPage = null;
 
-console.log(window.location.href,query);
+console.log(window.location.href, query);
 
 watch(_dataArr.value, (newQuestion, oldQuestion) => {
     handleResize(_dataArr.value.length);
@@ -303,7 +303,17 @@ function isInViewPortOfTwo(el) {
 
 //关闭移动收藏夹窗口
 function closeDialog(bool, model) {
+    console.log(model)
     _visible.value = false;
+    //删除不在当前收藏夹的数据
+    if (bool && query.Favorites_Id > 0) {
+        //同步删除数组元素
+        for (let i = _dataArr.value.length - 1; i >= 0; i--) {
+            if (_dataArr.value[i].id == _model.value.WebPage_Id && _dataArr.value[i].favorites_Id != model.favoritesId) {
+                _dataArr.value.splice(i, 1);
+            }
+        }
+    }
     //如果移动成功更新数据
     if (bool && model) {
         //更新数据
@@ -312,15 +322,6 @@ function closeDialog(bool, model) {
             if (value.id == model.webPageId) {
                 value.favorites_Id = model.favoritesId;
                 value.favoritesName = model.favoritesName;
-            }
-        }
-    }
-    //如果是不是最近选项不删除
-    if (bool && query.Favorites_Id > 0) {
-        //同步删除数组元素
-        for (let i = _dataArr.value.length - 1; i >= 0; i--) {
-            if (_dataArr.value[i].id == _model.value.WebPage_Id && _dataArr.value[i].favorites_Id != model.favoritesId) {
-                _dataArr.value.splice(i, 1);
             }
         }
     }

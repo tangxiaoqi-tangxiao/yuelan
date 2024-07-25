@@ -35,8 +35,8 @@ const _dialogTableVisible = ref(true);
 const _input = ref(null);
 const _datas = ref([]);
 
-let _Id = ref(props.Id);//文件夹id
-let _favoritesName = ref("");//文件夹名称
+let _Id = props.Id;//文件夹id
+let _favoritesName = "";//文件夹名称
 let _select_List = ref([]);
 
 onMounted(() => {
@@ -79,8 +79,9 @@ function select(index) {
     });
     _select_List.value[index].select = true;
     let model = _select_List.value[index];
-    _Id.value = model.Id;
-    _favoritesName.value = model.Name;
+    //更新全局数据
+    _Id = model.Id;
+    _favoritesName = model.Name;
 }
 
 function default_select() {
@@ -88,22 +89,25 @@ function default_select() {
         _select_List.value.forEach(e => {
             if (e.Id == props.Id) {
                 e.select = true;
+                //更新全局数据
+                _Id = e.Id;
+                _favoritesName = e.Name;
             }
         });
     }
 }
 
 function Classification() {
-    if (_Id.value && _Id.value > 0) {
+    if (_Id && _Id > 0) {
         Api.DB.Classification({
-            Favorites_Id: _Id.value,
+            Favorites_Id: _Id,
             WebPage_Id: props.WebPage_Id
         }).then(result => {
             if (result.code == 0) {
                 emit("closeDialog", true, {
                     webPageId: props.WebPage_Id,
-                    favoritesId: _Id.value,
-                    favoritesName: _favoritesName.value
+                    favoritesId: _Id,
+                    favoritesName: _favoritesName
                 });
                 ElMessage({
                     message: '移动成功',
