@@ -102,7 +102,6 @@ const _router = useRouter();
 const _input = ref(null);
 const _FavoritesArr = ref([]);
 const _indexKey = ref("");
-const _Favorites_Id = ref(0);
 const _Menu = ref("1");
 const _setUp = ref("");
 const _SearchShow = ref(true);
@@ -111,6 +110,9 @@ const _menuVisible = ref(false);
 const _menuX = ref(0);
 const _menuY = ref(0);
 const _menuOptions = ref([]);
+
+//全局变量
+let _Favorites_Id = 0;
 
 onMounted(() => {
     Home();
@@ -177,7 +179,6 @@ const handleMenuSelect = (optionValue) => {
         default:
             break;
     }
-    console.log(`父组件处理: 点击了`, optionValue);
     _menuVisible.value = false;
 }
 //关闭右键菜单
@@ -195,22 +196,22 @@ const handleClickOutside = (bool) => {
 }
 
 function Submit() {
-    _router.push({ name: 'content', query: { keyword: _input.value, Favorites_Id: _Favorites_Id.value } }).then(() => {
-        SetindexKey("1_" + _input.value + _Favorites_Id.value);
+    _router.push({ name: 'content', query: { keyword: _input.value, Favorites_Id: _Favorites_Id} }).then(() => {
+        SetindexKey("1_" + _input.value + _Favorites_Id);
     })
 }
 
 function Home() {
-    _Favorites_Id.value = 0;
+    _Favorites_Id = 0;
     _input.value = "";
-    _router.push({ name: 'content' }).then(() => {
+    _router.push({ name: 'content', query: { Favorites_Id: _Favorites_Id } }).then(() => {
         SetindexKey(0);
     });
 }
 
 function toggleFavorites(Favorites_Id) {
-    _Favorites_Id.value = Favorites_Id;
-    _router.push({ name: 'content', query: { Favorites_Id } }).then(() => {
+    _Favorites_Id = Favorites_Id;
+    _router.push({ name: 'content', query: { Favorites_Id: _Favorites_Id } }).then(() => {
         SetindexKey("2_" + Favorites_Id);
     });
 }

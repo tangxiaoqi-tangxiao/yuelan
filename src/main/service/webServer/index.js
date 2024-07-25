@@ -4,10 +4,11 @@ import bodyParser, { json } from 'body-parser';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 import fs from 'fs';
-import { InsertWebPage, DelWebPage } from '@main/service/core/webPage'
-import { formatDateTime } from '@main/utils/common'
-import logger from '@main/utils/logger'
-import { resources } from '@main/utils/globalVariable'
+import { InsertWebPage, DelWebPage, GetWebPage } from '@main/service/core/webPage';
+import { formatDateTime } from '@main/utils/common';
+import logger from '@main/utils/logger';
+import { resources } from '@main/utils/globalVariable';
+import { WindowMessage } from '@main/service/core/window.js';
 
 //全局变量
 const app = express();
@@ -74,12 +75,15 @@ app.post("/SendMhtml", upload.single('file'), async (req, res) => {
                 } else {
                     ensureDirExists(ImgsPath);
                     // 将 Base64 编码的数据写入文件
-                    fs.writeFile(path.join(ImgsPath, `${uuid}.png`), jsonData.base64Image, { encoding: 'base64' }, function (err) {
+                    fs.writeFile(path.join(ImgsPath, `${uuid}.png`), jsonData.base64Image, { encoding: 'base64' }, async function (err) {
                         if (err) {
                             logger.error(`文件保存失败,错误信息：${err}`);
                         } else {
                             logger.info('文件保存成功');
                         }
+                        //更新默认窗口页面数据
+                        let data = await GetWebPage(id);
+                        WindowMessage('MonitorNewWebPage', data);
                     });
                     res.status(200).send('');
                 }

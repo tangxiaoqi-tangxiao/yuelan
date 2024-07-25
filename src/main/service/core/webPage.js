@@ -30,10 +30,11 @@ async function InsertWebPage(params) {
 async function GetWebPageList(data) {
     let row = null;
 
+    data.FavoritesId = parseInt(data.FavoritesId);
     let keyword_queryParam = `%${data.keyword}%`;
 
     if (data.keyword && data.FavoritesId && data.FavoritesId > 0) {
-        let sql = ` SELECT * FROM WebPage WHERE Favorites_Id =? AND Title LIKE ? OR ContentText LIKE ? ORDER BY CASE WHEN Title LIKE ? THEN 1 ELSE 2 END`;
+        let sql = ` SELECT * FROM WebPage WHERE Favorites_Id =? AND (Title LIKE ? OR ContentText LIKE ?) ORDER BY CASE WHEN Title LIKE ? THEN 1 ELSE 2 END`;
         // 查询数据
         row = await db.pagedAll(sql, [data.FavoritesId, keyword_queryParam, keyword_queryParam, keyword_queryParam], data.index, undefined);
     } else if (data.keyword) {
@@ -70,7 +71,7 @@ async function GetWebPageList(data) {
 
 //获取webPage页面数据
 async function GetWebPage(id) {
-    const sql = `SELECT Id,Title,UUID FROM WebPage WHERE Id=?`;
+    const sql = `SELECT * FROM WebPage WHERE Id=?`;
     let data = await db.get(sql, [id]);
     return data;
 }

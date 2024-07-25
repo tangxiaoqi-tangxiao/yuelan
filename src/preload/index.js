@@ -29,14 +29,15 @@ const Api = {
   //   }
   // },
   WebContents: {
-    MonitorFavorites: (callback) => ipcRenderer.on('MonitorFavorites', (_event, value) => callback(value))
+    MonitorFavorites: (callback) => ipcRenderer.on('MonitorFavorites', (_event, value) => callback(value)),
+    MonitorNewWebPage: (callback) => ipcRenderer.on('MonitorNewWebPage', (_event, value) => callback(value)),
   },
   System: {
     BootStart: (data) => ipcRenderer.invoke('index:System:BootStart', data),
     GetBootStart: () => ipcRenderer.invoke('index:System:GetBootStart'),
   },
   DB: {
-    GetContent: (data) => ipcRenderer.invoke('index:DB:GetWebPageList', data),
+    GetWebPageList: (data) => ipcRenderer.invoke('index:DB:GetWebPageList', data),
     GetFavoritesList: (data) => ipcRenderer.invoke('index:DB:GetFavoritesList', data),
     Classification: (data) => ipcRenderer.invoke('index:DB:Classification', data),
   },

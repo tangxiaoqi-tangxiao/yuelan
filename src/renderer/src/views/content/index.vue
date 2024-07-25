@@ -69,7 +69,7 @@ const _menuOptions = ref([
 let _index = 1;
 let _WebPage = null;
 
-console.log(window.location.href);
+console.log(window.location.href,query);
 
 watch(_dataArr.value, (newQuestion, oldQuestion) => {
     handleResize(_dataArr.value.length);
@@ -237,7 +237,7 @@ function handleResize(length) {
 //获取内容
 function GetContent(index) {
     return new Promise((resolve, reject) => {
-        Api.DB.GetContent({ index, keyword: query.keyword, FavoritesId: query.Favorites_Id }).then(datas => {
+        Api.DB.GetWebPageList({ index, keyword: query.keyword, FavoritesId: query.Favorites_Id }).then(datas => {
             datas.forEach(data => {
                 _dataArr.value.push(GetData(data));
             });
@@ -249,6 +249,8 @@ function GetContent(index) {
         });
     });
 }
+
+//数据映射
 function GetData(data) {
     return {
         id: data.Id,
@@ -261,6 +263,7 @@ function GetData(data) {
         favoritesName: data.FavoritesName
     }
 }
+
 //检测加载
 function loadContent() {
     // 创建一个 IntersectionObserver 实例  
@@ -316,12 +319,18 @@ function closeDialog(bool, model) {
     if (bool && query.Favorites_Id > 0) {
         //同步删除数组元素
         for (let i = _dataArr.value.length - 1; i >= 0; i--) {
-            if (_dataArr.value[i].id == _model.value.WebPage_Id) {
+            if (_dataArr.value[i].id == _model.value.WebPage_Id && _dataArr.value[i].favorites_Id != model.favoritesId) {
                 _dataArr.value.splice(i, 1);
             }
         }
     }
 }
+
+Api.WebContents.MonitorNewWebPage((data) => {
+    if (query.Favorites_Id == 0) {
+        _dataArr.value.unshift(GetData(data));
+    }
+});
 </script>
 
 <style scoped>
