@@ -59,6 +59,7 @@ const _menuY = ref(0);
 const _menuOptions = ref([
     { label: '使用浏览器打开', value: '1' },
     { label: '导出', value: '2' },
+    { label: '导出为 HTML 网页', value: '6' },
     { label: '移动', value: '5' },
     // { label: '标签', value: '6' },
     { label: '', value: '' },
@@ -198,6 +199,17 @@ const handleMenuSelect = (optionValue) => {
         _model.value.Id = _WebPage.favorites_Id;
         _model.value.WebPage_Id = _WebPage.id;
         _visible.value = true;
+    } else if (optionValue == "6") {
+        Api.RightClickMenu.exportHtml(_WebPage.id).then(result => {
+            if (result.code == 0) {
+                ElMessage({
+                    message: '导出Html成功',
+                    type: 'success',
+                });
+            } else if (result.code > 0) {
+                ElMessage.error("导出失败");
+            }
+        });
     }
 
     _menuVisible.value = false;

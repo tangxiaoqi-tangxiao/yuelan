@@ -6,6 +6,9 @@ import { GetWebPage, DelWebPage as DelWebPageDB, RenameTitleWebPage as RenameTit
 import { InsertFavorites as InsertFavoritesDB } from './favorites';
 import { WindowMessage } from './window';
 import { sanitizeFilename, getFileVersionedName } from '@main/utils/common.js';
+import { resourcesPath } from '@main/utils/globalVariable.js';
+
+const { mhtmlTohtml } = require(path.join(resourcesPath, 'Node', 'index'));
 
 const WebPagePath = path.join(WebPageDataPath, "WebPage");
 const ImgsPath = path.join(WebPageDataPath, "Imgs");
@@ -15,8 +18,9 @@ function initialization() {
     ipcMain.handle("index:RightClickMenu:exportWebPage", async (event, id) => exportWebPage(id));
     ipcMain.handle("index:RightClickMenu:DelWebPage", async (event, id) => DelWebPage(id));
     ipcMain.handle("index:RightClickMenu:RenameTitleWebPage", async (event, data) => RenameTitleWebPage(data.id, data.title));
-    ipcMain.handle("index:RightClickMenu:exportWebPageList", async (event, data) => exportWebPageList(data));
+    ipcMain.handle("index:RightClickMenu:exportWebPageList", async (event, data) => name(data));
     ipcMain.handle('index:RightClickMenu:InsertFavorites', async (event, data) => InsertFavorites(data));
+    ipcMain.handle('index:RightClickMenu:exportHtml', async (event, data) => exportHtml(data));
 }
 
 //使用浏览器打开web文件
@@ -28,7 +32,7 @@ function openWebPage(UUID) {
             message: "网页文件不存在"
         };
     }
-    
+
     shell.openPath(path.join(WebPagePath, UUID + ".mhtml"));
     return {
         code: 0,
@@ -163,5 +167,72 @@ async function InsertFavorites(data) {
         data: null,
         message: "更新收藏夹失败"
     };
+}
+
+//导出html
+async function exportHtml(id) {
+    return new Promise(async (resolve, reject) => {
+        // 显示文件夹选择器对话框
+        let Dialog = await dialog.showOpenDialog({
+            properties: ['openDirectory'] // 只允许选择文件夹
+        });
+
+        if (!Dialog.canceled) {
+            const DialogPath = Dialog.filePaths[0];
+            try {
+                let data = await GetWebPage(id);
+                if (data) {
+                    let fileName = sanitizeFilename(data.Title);
+                    fileName = getFileVersionedName(path.join(DialogPath, `${fileName}.html`));
+
+                    fse.readFile(path.join(WebPagePath, data.UUID + ".mhtml"), 'utf8').then(str => {
+                        str = mhtmlTohtml(str);
+                        fse.writeFile(path.join(DialogPath, `${fileName}`), str);
+                        resolve({
+                            code: 0,
+                            data: null,
+                            message: ""
+                        });
+                    }).catch(err=>{
+                        resolve({
+                            code: 1,
+                            data: null,
+                            message: err
+                        });
+                    });
+                } else {
+                    resolve({
+                        code: 1,
+                        data: null,
+                        message: "数据不存在"
+                    });
+                }
+            } catch (err) {
+                resolve({
+                    code: 1,
+                    data: null,
+                    message: err
+                });
+            }
+        } else {
+            resolve({
+                code: -1,
+                data: null,
+                message: ""
+            });
+        }
+    });
+    // // 显示文件夹选择器对话框
+    // let DialogArr = dialog.showOpenDialogSync({
+    //     properties: ['openDirectory'] // 只允许选择文件夹
+    // });
+    // if (DialogArr) {
+    //     const DialogPath = DialogArr[0];
+    //     let data = await GetWebPage(id);
+    //     fse.readFile(path.join(WebPagePath, data.UUID + ".mhtml"),'utf8').then(str => {
+    //         str = mhtmlTohtml(str);
+    //         fse.writeFile(path.join(DialogPath, data.UUID + ".html"), str);
+    //     })
+    // }
 }
 export { initialization, openWebPage, exportWebPage, exportWebPageList };

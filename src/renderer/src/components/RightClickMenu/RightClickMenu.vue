@@ -76,6 +76,7 @@ onMounted(() => {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-radius: 7px;
   overflow: hidden;
+  font-size: 15px;
 }
 
 .context-menu ul {

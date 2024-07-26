@@ -51,6 +51,7 @@ const Api = {
     RenameTitleWebPage: (data) => ipcRenderer.invoke("index:RightClickMenu:RenameTitleWebPage", data),
     exportWebPageList: (UUID) => ipcRenderer.send("index:RightClickMenu:exportWebPageList", UUID),
     InsertFavorites: (data) => ipcRenderer.invoke("index:RightClickMenu:InsertFavorites", data),
+    exportHtml: (data) => ipcRenderer.invoke("index:RightClickMenu:exportHtml", data),
   }
 };
 

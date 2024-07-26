@@ -5,3 +5,4 @@ out
 *.log*
 resources/data/yuelan.db3
 resources/WebPageData/*
+resources/Node/*
