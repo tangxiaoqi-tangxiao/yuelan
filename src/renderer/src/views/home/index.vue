@@ -196,7 +196,7 @@ const handleClickOutside = (bool) => {
 }
 
 function Submit() {
-    _router.push({ name: 'content', query: { keyword: _input.value, Favorites_Id: _Favorites_Id} }).then(() => {
+    _router.push({ name: 'content', query: { keyword: _input.value, Favorites_Id: _Favorites_Id } }).then(() => {
         SetindexKey("1_" + _input.value + _Favorites_Id);
     })
 }
@@ -303,25 +303,26 @@ function NewFolder() {
 
 /* 滚动条样式 */
 .Menu::-webkit-scrollbar {
-    width: 8px;
     /* 滚动条的宽度 */
+    width: 8px;
 }
 
 .Menu::-webkit-scrollbar-track {
-    background: #f1f1f1;
     /* 滚动条轨道的颜色 */
+    background: #e6e6e6;
+    border-radius: 4px;
 }
 
 .Menu::-webkit-scrollbar-thumb {
-    background: #888;
     /* 滚动条的颜色 */
-    border-radius: 4px;
+    background: #888;
     /* 滚动条圆角 */
+    border-radius: 4px;
 }
 
 .Menu::-webkit-scrollbar-thumb:hover {
-    background: #555;
     /* 悬停时滚动条的颜色 */
+    background: #555;
 }
 
 .Menu>>>.el-menu--vertical {

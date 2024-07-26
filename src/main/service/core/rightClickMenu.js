@@ -21,13 +21,14 @@ function initialization() {
 
 //使用浏览器打开web文件
 function openWebPage(UUID) {
-    if (!fse.pathExistsSync(WebPagePath, UUID + ".mhtml")) {
+    if (!fse.pathExistsSync(path.join(WebPagePath, UUID + ".mhtml"))) {
         return {
             code: 1,
             data: null,
             message: "网页文件不存在"
         };
     }
+    
     shell.openPath(path.join(WebPagePath, UUID + ".mhtml"));
     return {
         code: 0,
