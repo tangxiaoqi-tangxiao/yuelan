@@ -65,6 +65,10 @@ function search(value) {
                 if (bool) {
                     e.select = true;
                     bool = false;
+
+                    //更新全局数据
+                    _Id = e.Id;
+                    _favoritesName = e.Name;
                 }
                 return true;
             }

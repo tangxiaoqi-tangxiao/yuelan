@@ -7,13 +7,13 @@ import fs from 'fs';
 import { InsertWebPage, DelWebPage, GetWebPage } from '@main/service/core/webPage';
 import { formatDateTime } from '@main/utils/common';
 import logger from '@main/utils/logger';
-import { resources } from '@main/utils/globalVariable';
+import { WebPageDataPath } from '@main/utils/globalVariable';
 import { WindowMessage } from '@main/service/core/window.js';
 
 //全局变量
 const app = express();
-const WebPagePath = path.join(resources, "WebPage");
-const ImgsPath = path.join(resources, "Imgs");
+const WebPagePath = path.join(WebPageDataPath, "WebPage");
+const ImgsPath = path.join(WebPageDataPath, "Imgs");
 
 // 解析 JSON 请求体
 app.use(bodyParser.json({ limit: '2gb' }));

@@ -1,14 +1,14 @@
 import { ipcMain, shell, dialog } from 'electron';
 import path from 'path';
-import { resources } from '@main/utils/globalVariable.js';
+import { WebPageDataPath } from '@main/utils/globalVariable.js';
 import fse from 'fs-extra';
 import { GetWebPage, DelWebPage as DelWebPageDB, RenameTitleWebPage as RenameTitleWebPageDB } from './webPage';
 import { InsertFavorites as InsertFavoritesDB } from './favorites';
 import { WindowMessage } from './window';
 import { sanitizeFilename, getFileVersionedName } from '@main/utils/common.js';
 
-const WebPagePath = path.join(resources, "WebPage");
-const ImgsPath = path.join(resources, "Imgs");
+const WebPagePath = path.join(WebPageDataPath, "WebPage");
+const ImgsPath = path.join(WebPageDataPath, "Imgs");
 
 function initialization() {
     ipcMain.handle("index:RightClickMenu:OpenWebPage", (event, UUID) => openWebPage(UUID));
