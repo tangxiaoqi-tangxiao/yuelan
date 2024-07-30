@@ -68,7 +68,11 @@ async function GetWebPageList(data) {
     // 发送响应回渲染进程
     return row;
 }
-
+async function GetWebPageListFavorites(id){
+    const sql = `SELECT Id,Favorites_Id,UUID,Title FROM WebPage WHERE Favorites_Id=?`;
+    let datas = await db.all(sql, [id]);
+    return datas;
+}
 //获取webPage页面数据
 async function GetWebPage(id) {
     const sql = `SELECT * FROM WebPage WHERE Id=?`;
@@ -104,4 +108,4 @@ async function Classification(WebPage_Id, Favorites_Id) {
     return result;
 }
 
-export { initialization, GetWebPageList, GetWebPage, DelWebPage, RenameTitleWebPage, InsertWebPage }
+export { initialization, GetWebPageList, GetWebPage, DelWebPage, RenameTitleWebPage, InsertWebPage ,GetWebPageListFavorites}

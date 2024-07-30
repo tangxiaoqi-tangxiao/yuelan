@@ -2,7 +2,7 @@ import { ipcMain, shell, dialog } from 'electron';
 import path from 'path';
 import { WebPageDataPath } from '@main/utils/globalVariable.js';
 import fse from 'fs-extra';
-import { GetWebPage, DelWebPage as DelWebPageDB, RenameTitleWebPage as RenameTitleWebPageDB } from './webPage';
+import { GetWebPage, DelWebPage as DelWebPageDB, RenameTitleWebPage as RenameTitleWebPageDB, GetWebPageListFavorites } from './webPage';
 import { InsertFavorites as InsertFavoritesDB } from './favorites';
 import { WindowMessage } from './window';
 import { sanitizeFilename, getFileVersionedName } from '@main/utils/common.js';
@@ -18,7 +18,7 @@ function initialization() {
     ipcMain.handle("index:RightClickMenu:exportWebPage", async (event, id) => exportWebPage(id));
     ipcMain.handle("index:RightClickMenu:DelWebPage", async (event, id) => DelWebPage(id));
     ipcMain.handle("index:RightClickMenu:RenameTitleWebPage", async (event, data) => RenameTitleWebPage(data.id, data.title));
-    ipcMain.handle("index:RightClickMenu:exportWebPageList", async (event, data) => name(data));
+    ipcMain.handle("index:RightClickMenu:exportWebPageList", async (event, data) => exportWebPageList(data));
     ipcMain.handle('index:RightClickMenu:InsertFavorites', async (event, data) => InsertFavorites(data));
     ipcMain.handle('index:RightClickMenu:exportHtml', async (event, data) => exportHtml(data));
 }
@@ -95,18 +95,65 @@ function exportWebPage(id) {
 }
 
 //导出web文件列表
-function exportWebPageList(UUID) {
-    // 显示文件夹选择器对话框
-    let DialogArr = dialog.showOpenDialogSync({
-        properties: ['openDirectory'] // 只允许选择文件夹
+function exportWebPageList(id) {
+    return new Promise(async (resolve, reject) => {
+        // 显示文件夹选择器对话框
+        let Dialog = await dialog.showOpenDialog({
+            properties: ['openDirectory'] // 只允许选择文件夹
+        });
+
+        if (!Dialog.canceled) {
+            const DialogPath = Dialog.filePaths[0];
+            try {
+                let datas = await GetWebPageListFavorites(id);
+                if (datas) {
+                    let arr = [];
+                    for (let index = 0; index < datas.length; index++) {
+                        let data = datas[index];
+                        let fileName = sanitizeFilename(data.Title);
+                        fileName = getFileVersionedName(path.join(DialogPath, `${fileName}.mhtml`));
+                        arr.push({
+                            inputPath: path.join(WebPagePath, data.UUID + ".mhtml"),
+                            outputPath: path.join(DialogPath, `${fileName}`)
+                        });
+                    }
+                    copyFiles(arr).then(() => {
+                        resolve({
+                            code: 0,
+                            data: null,
+                            message: ""
+                        });
+                    }).catch(() => {
+                        resolve({
+                            code: 1,
+                            data: null,
+                            message: ""
+                        });
+                    });
+
+                } else {
+                    resolve({
+                        code: 1,
+                        data: null,
+                        message: ""
+                    });
+                }
+            } catch (err) {
+                console.log(err)
+                resolve({
+                    code: 1,
+                    data: null,
+                    message: err
+                });
+            }
+        } else {
+            resolve({
+                code: -1,
+                data: null,
+                message: ""
+            });
+        }
     });
-    if (DialogArr) {
-        const DialogPath = DialogArr[0];
-        fse.copy(path.join(WebPagePath, UUID + ".mhtml"), path.join(DialogPath), err => {
-            if (err) return console.error(err)
-            console.log('success!');
-        }); // copies file
-    }
 }
 
 //删除web页面
@@ -193,7 +240,7 @@ async function exportHtml(id) {
                             data: null,
                             message: ""
                         });
-                    }).catch(err=>{
+                    }).catch(err => {
                         resolve({
                             code: 1,
                             data: null,
@@ -221,6 +268,18 @@ async function exportHtml(id) {
                 message: ""
             });
         }
+    });
+}
+
+async function copyFiles(arr) {
+    return new Promise(async (resolve, reject) => {
+        for (const data of arr) {
+            fse.copy(data.inputPath, data.outputPath, err => {
+                if (err) reject(err);
+                console.log('success!');
+            });
+        }
+        resolve();
     });
 }
 export { initialization, openWebPage, exportWebPage, exportWebPageList };

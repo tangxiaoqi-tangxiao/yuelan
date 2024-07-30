@@ -49,7 +49,7 @@ const Api = {
     exportWebPage: (id) => ipcRenderer.invoke("index:RightClickMenu:exportWebPage", id),
     DelWebPage: (id) => ipcRenderer.invoke("index:RightClickMenu:DelWebPage", id),
     RenameTitleWebPage: (data) => ipcRenderer.invoke("index:RightClickMenu:RenameTitleWebPage", data),
-    exportWebPageList: (UUID) => ipcRenderer.send("index:RightClickMenu:exportWebPageList", UUID),
+    exportWebPageList: (id) => ipcRenderer.invoke("index:RightClickMenu:exportWebPageList", id),
     InsertFavorites: (data) => ipcRenderer.invoke("index:RightClickMenu:InsertFavorites", data),
     exportHtml: (data) => ipcRenderer.invoke("index:RightClickMenu:exportHtml", data),
   }

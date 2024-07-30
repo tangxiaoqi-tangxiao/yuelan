@@ -23,8 +23,8 @@
                             <span>收藏夹</span>
                         </template>
                         <template v-for="(item, index) in _FavoritesArr">
-                            <el-menu-item @contextmenu.prevent="showMenu($event)" @click="toggleFavorites(item.Id)"
-                                class="background-menu" :index="`1-${index + 1}`">
+                            <el-menu-item @contextmenu.prevent="showMenu($event, 3, item)"
+                                @click="toggleFavorites(item.Id)" class="background-menu" :index="`1-${index + 1}`">
                                 <el-icon>
                                     <Tickets />
                                 </el-icon>
@@ -113,6 +113,7 @@ const _menuOptions = ref([]);
 
 //全局变量
 let _Favorites_Id = 0;
+let _Favorites = null;
 
 onMounted(() => {
     Home();
@@ -136,7 +137,7 @@ onUnmounted(() => {
 });
 
 //打开右键菜单
-const showMenu = function (event, index) {
+const showMenu = function (event, index, data) {
     event.preventDefault();
     _menuVisible.value = false;
     nextTick(() => {
@@ -153,10 +154,24 @@ const showMenu = function (event, index) {
                 ];
                 _menuVisible.value = true;
                 break;
+            case 3:
+                _menuOptions.value = [
+                    { label: '导出当前收藏夹', value: { index: 3, value: 1 } },
+                    { label: '', value: "" },
+                    { label: '清空收藏夹', value: { index: 3, value: 2 } },
+                    { label: '删除收藏夹', value: { index: 3, value: 2 } },
+                ];
+                _menuVisible.value = true;
+                break;
             default:
                 _menuOptions.value = [];
                 _menuVisible.value = false;
                 break;
+        }
+        console.log("data：",data)
+        if (data) {
+            _Favorites = data;
+            console.log(_Favorites)
         }
     });
 }
@@ -175,7 +190,25 @@ const handleMenuSelect = (optionValue) => {
                     break;
             }
             break;
+        case 3:
+            switch (value) {
+                case 1:
+                    Api.RightClickMenu.exportWebPageList(_Favorites.Id).then(result => {
+                        if (result.code == 0) {
+                            ElMessage({
+                                message: '导出收藏夹文件成功',
+                                type: 'success',
+                            });
+                        } else if (result.code != -1) {
+                            ElMessage.error("导出收藏夹文件失败");
+                        }
+                    });
+                    break;
 
+                default:
+                    break;
+            }
+            break;
         default:
             break;
     }
@@ -264,7 +297,7 @@ function NewFolder() {
                 } else {
                     ElMessage.error("创建收藏夹失败");
                 }
-            })
+            });
         }).catch(err => {
 
         });
