@@ -222,17 +222,5 @@ async function exportHtml(id) {
             });
         }
     });
-    // // 显示文件夹选择器对话框
-    // let DialogArr = dialog.showOpenDialogSync({
-    //     properties: ['openDirectory'] // 只允许选择文件夹
-    // });
-    // if (DialogArr) {
-    //     const DialogPath = DialogArr[0];
-    //     let data = await GetWebPage(id);
-    //     fse.readFile(path.join(WebPagePath, data.UUID + ".mhtml"),'utf8').then(str => {
-    //         str = mhtmlTohtml(str);
-    //         fse.writeFile(path.join(DialogPath, data.UUID + ".html"), str);
-    //     })
-    // }
 }
 export { initialization, openWebPage, exportWebPage, exportWebPageList };
