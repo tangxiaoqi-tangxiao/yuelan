@@ -1,28 +1,35 @@
 <template>
     <div id="container" ref="_container">
-        <div id="content" ref="_content">
-            <template v-for="item in _dataArr">
-                <el-card @contextmenu.prevent="showMenu($event, item)" style="max-width: 280px" class="card">
-                    <el-text line-clamp="2" size="large" style="font-weight: bold;">{{ item.title }}</el-text><br>
-                    <el-text line-clamp="3" size="small" style="color:rgb(130, 130, 130);width: 100%;">{{ item.content
-                        }}</el-text>
-                    <el-image style="width:auto" :src="item.cover" :preview-src-list="[item.cover]" fit="fill">
-                        <template #error>
-                            <div class="image-error">
-                                <el-icon :size="30"><icon-picture /></el-icon>
-                            </div>
-                        </template>
-                    </el-image>
-                    <br>
-                    <span style="font-size: 16px;color:rgb(130, 130, 130);">收藏夹：</span>
-                    <el-tag style="max-width: 120px;overflow:hidden">
-                        {{ item.favoritesName ? item.favoritesName : "暂无"
-                        }}</el-tag><br>
-                    <el-text size="small">{{ item.date }}</el-text>
-                </el-card>
-            </template>
-        </div>
-        <div ref="_load" class="load">这里一片荒芜</div>
+        <template v-if="(!_dataArr || _dataArr.length == 0) && _nullImage">
+            <p style="color:#D1D1D1;padding-left: 50px;font-size:2vw">这里只有一片星辰大海</p>
+            <img src="../../assets/image/an_astronaut.svg" alt="SVG Image" style="margin: 0 auto;display: block;width: 50%;height: 50%;" />
+        </template>
+        <template v-else>
+            <div id="content" ref="_content">
+                <template v-for="item in _dataArr">
+                    <el-card @contextmenu.prevent="showMenu($event, item)" style="max-width: 280px" class="card">
+                        <el-text line-clamp="2" size="large" style="font-weight: bold;">{{ item.title }}</el-text><br>
+                        <el-text line-clamp="3" size="small" style="color:rgb(130, 130, 130);width: 100%;">{{
+            item.content
+        }}</el-text>
+                        <el-image style="width:auto" :src="item.cover" :preview-src-list="[item.cover]" fit="fill">
+                            <template #error>
+                                <div class="image-error">
+                                    <el-icon :size="30"><icon-picture /></el-icon>
+                                </div>
+                            </template>
+                        </el-image>
+                        <br>
+                        <span style="font-size: 16px;color:rgb(130, 130, 130);">收藏夹：</span>
+                        <el-tag style="max-width: 120px;overflow:hidden">
+                            {{ item.favoritesName ? item.favoritesName : "暂无"
+                            }}</el-tag><br>
+                        <el-text size="small">{{ item.date }}</el-text>
+                    </el-card>
+                </template>
+            </div>
+            <div ref="_load" class="load">这里一片荒芜</div>
+        </template>
     </div>
     <RightClickMenu v-if="_menuVisible" :x="_menuX" :y="_menuY" :options="_menuOptions" @close="_menuVisible = false"
         @select="handleMenuSelect" />
@@ -35,7 +42,7 @@ import { ref, nextTick, onMounted, onUnmounted, watch } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Picture as IconPicture } from '@element-plus/icons-vue';
 import RightClickMenu from '@/components/RightClickMenu/RightClickMenu.vue';
-import mobileFavorites from './mobileFavorites.vue'
+import mobileFavorites from './mobileFavorites.vue';
 
 const { query, params } = useRoute();
 
@@ -52,6 +59,7 @@ const _model = ref({
     Id: 0,
     WebPage_Id: 0
 });
+const _nullImage = ref(false);
 //右键菜单
 const _menuVisible = ref(false);
 const _menuX = ref(0);
@@ -237,6 +245,9 @@ const handleClickOutside = (bool) => {
 //监听窗口缩放
 function handleResize(length) {
     let cardLength = length && typeof length == 'number' ? length : document.querySelectorAll('.card').length;
+    if(cardLength<=0){
+        return;
+    }
     let container = _container.value.clientWidth;
     let cardWidth = (cardLength * 300) - 15;
     if (container - 40 > cardWidth) {
@@ -253,6 +264,10 @@ function GetContent(index) {
             datas.forEach(data => {
                 _dataArr.value.push(GetData(data));
             });
+
+            //表示可以加载数据为空图片
+            _nullImage.value = true;
+
             if (datas.length > 0) {
                 _index++;
                 resolve(true);
@@ -278,6 +293,7 @@ function GetData(data) {
 
 //检测加载
 function loadContent() {
+    GetContent(_index);
     // 创建一个 IntersectionObserver 实例  
     const observer = new IntersectionObserver((entries, observer) => {
         // 检查目标元素是否在视口内  
