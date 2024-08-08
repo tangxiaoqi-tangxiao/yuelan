@@ -1,18 +1,24 @@
 <template>
-    <div id="container" ref="_container">
+    <div id="container" ref="_container" style="height: 100%;">
         <template v-if="(!_dataArr || _dataArr.length == 0) && _nullImage">
-            <p style="color:#D1D1D1;padding-left: 50px;font-size:2vw">这里只有一片星辰大海</p>
-            <img src="../../assets/image/an_astronaut.svg" alt="SVG Image" style="margin: 0 auto;display: block;width: 50%;height: 50%;" />
+            <div style="height: 100%;display: flex;flex-direction: column;align-content: flex-start;">
+                <p style="color:#D1D1D1;padding-left: 50px;font-size:2vw">这里什么都没有,只有一片星辰大海</p>
+                <img src="../../assets/image/an_astronaut.svg" alt="SVG Image"
+                    style="margin: auto auto;display: block;width: 60vw;height: 60vh;" />
+            </div>
         </template>
         <template v-else>
             <div id="content" ref="_content">
                 <template v-for="item in _dataArr">
-                    <el-card @contextmenu.prevent="showMenu($event, item)" style="max-width: 280px" class="card">
+                    <el-card shadow="hover" @contextmenu.prevent="showMenu($event, item)"
+                        style="max-width: 280px;cursor:pointer;user-select: none;" class="card"
+                        @click="ClickOpenWebPage($event, item)">
                         <el-text line-clamp="2" size="large" style="font-weight: bold;">{{ item.title }}</el-text><br>
                         <el-text line-clamp="3" size="small" style="color:rgb(130, 130, 130);width: 100%;">{{
             item.content
         }}</el-text>
-                        <el-image style="width:auto" :src="item.cover" :preview-src-list="[item.cover]" fit="fill">
+                        <el-image class="el_img" style="width:auto" :src="item.cover" :preview-src-list="[item.cover]"
+                            fit="fill">
                             <template #error>
                                 <div class="image-error">
                                     <el-icon :size="30"><icon-picture /></el-icon>
@@ -46,15 +52,11 @@ import mobileFavorites from './mobileFavorites.vue';
 
 const { query, params } = useRoute();
 
-
 const _content = ref(null);
 const _container = ref(null);
 const _load = ref(null);
 const _dataArr = ref([]);
 const _visible = ref(false);
-const _filePath = "file:///" + Api.File.WebPageDataPath;
-const _imagePath = _filePath + "/imgs/";
-const _WebPagePath = _filePath + "/WebPage/";
 const _model = ref({
     Id: 0,
     WebPage_Id: 0
@@ -75,6 +77,9 @@ const _menuOptions = ref([
     { label: '删除', value: '3' }
 ]);
 
+let _filePath = "file:///";
+let _imagePath = null;
+let _WebPagePath = null;
 let _index = 1;
 let _WebPage = null;
 
@@ -84,9 +89,11 @@ watch(_dataArr.value, (newQuestion, oldQuestion) => {
     handleResize(_dataArr.value.length);
 });
 
-onMounted(() => {
+onMounted(async () => {
+    //获取文件地址
+    initializeFilePath(await Api.File.WebPageDataPath);
+
     //更新数据
-    // GetContent(index);
     loadContent(_index);
     // 组件挂载后添加监听器  
     window.addEventListener('resize', handleResize);
@@ -108,6 +115,31 @@ onUnmounted(() => {
     window.removeEventListener('blur', handleClickOutside(false));
     document.querySelector("#NewPage")?.removeEventListener('scroll', handleClickOutside(false));
 });
+
+function ClickOpenWebPage(event, data) {
+    if (event.target.closest) {
+        // 查找最近的 class 为 'el_img' 的祖先元素
+        const el_imgElement = event.target.closest('.el_img');
+        const el_image_viewerElement = event.target.closest('.el-image-viewer__wrapper');
+        if (el_imgElement || el_image_viewerElement) {
+            return;
+        }
+    }
+    let nodeName = event.target.nodeName;
+    if (nodeName == "svg" || nodeName == "path") {
+        return;
+    }
+    Api.RightClickMenu.OpenWebPage(data.uuid).then(result => {
+        if (result.code == 0) {
+            ElMessage({
+                message: '浏览器打开网页成功',
+                type: 'success',
+            });
+        } else {
+            ElMessage.error(result.message);
+        }
+    });
+}
 
 //打开右键菜单
 const showMenu = function (event, data) {
@@ -245,7 +277,7 @@ const handleClickOutside = (bool) => {
 //监听窗口缩放
 function handleResize(length) {
     let cardLength = length && typeof length == 'number' ? length : document.querySelectorAll('.card').length;
-    if(cardLength<=0){
+    if (cardLength <= 0) {
         return;
     }
     let container = _container.value.clientWidth;
@@ -293,7 +325,6 @@ function GetData(data) {
 
 //检测加载
 function loadContent() {
-    GetContent(_index);
     // 创建一个 IntersectionObserver 实例  
     const observer = new IntersectionObserver((entries, observer) => {
         // 检查目标元素是否在视口内  
@@ -357,9 +388,16 @@ function closeDialog(bool, model) {
 
 Api.WebContents.MonitorNewWebPage((data) => {
     if (query.Favorites_Id == 0) {
+        _nullImage.value = true;
         _dataArr.value.unshift(GetData(data));
     }
 });
+
+function initializeFilePath(FilePath) {
+    _filePath += FilePath;
+    _imagePath = _filePath + "/imgs/";
+    _WebPagePath = _filePath + "/WebPage/";
+}
 </script>
 
 <style scoped>

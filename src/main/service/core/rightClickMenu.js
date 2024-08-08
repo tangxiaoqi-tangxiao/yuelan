@@ -6,9 +6,9 @@ import { GetWebPage, DelWebPage as DelWebPageDB, RenameTitleWebPage as RenameTit
 import { InsertFavorites as InsertFavoritesDB } from './favorites';
 import { WindowMessage } from './window';
 import { sanitizeFilename, getFileVersionedName } from '@main/utils/common.js';
-import { resourcesPath } from '@main/utils/globalVariable.js';
+import { originalResourcesPath } from '@main/utils/globalVariable.js';
 
-const { mhtmlTohtml } = require(path.join(resourcesPath, 'Node', 'index'));
+const { mhtmlTohtml } = require(path.join(originalResourcesPath, 'Node', 'index'));
 
 const WebPagePath = path.join(WebPageDataPath, "WebPage");
 const ImgsPath = path.join(WebPageDataPath, "Imgs");
@@ -95,7 +95,7 @@ function exportWebPage(id) {
 }
 
 //导出web文件列表
-function exportWebPageList(id) {
+async function exportWebPageList(id) {
     return new Promise(async (resolve, reject) => {
         // 显示文件夹选择器对话框
         let Dialog = await dialog.showOpenDialog({
@@ -107,30 +107,12 @@ function exportWebPageList(id) {
             try {
                 let datas = await GetWebPageListFavorites(id);
                 if (datas) {
-                    let arr = [];
                     for (let index = 0; index < datas.length; index++) {
                         let data = datas[index];
                         let fileName = sanitizeFilename(data.Title);
                         fileName = getFileVersionedName(path.join(DialogPath, `${fileName}.mhtml`));
-                        arr.push({
-                            inputPath: path.join(WebPagePath, data.UUID + ".mhtml"),
-                            outputPath: path.join(DialogPath, `${fileName}`)
-                        });
+                        await copyFile(path.join(WebPagePath, data.UUID + ".mhtml"), path.join(DialogPath, `${fileName}`));
                     }
-                    copyFiles(arr).then(() => {
-                        resolve({
-                            code: 0,
-                            data: null,
-                            message: ""
-                        });
-                    }).catch(() => {
-                        resolve({
-                            code: 1,
-                            data: null,
-                            message: ""
-                        });
-                    });
-
                 } else {
                     resolve({
                         code: 1,
@@ -280,6 +262,15 @@ async function copyFiles(arr) {
             });
         }
         resolve();
+    });
+}
+
+async function copyFile(inputPath, outputPath){
+    return new Promise(async (resolve, reject) => {
+        fse.copy(inputPath, outputPath, err => {
+            if (err) reject(err);
+            resolve();
+        });
     });
 }
 export { initialization, openWebPage, exportWebPage, exportWebPageList };

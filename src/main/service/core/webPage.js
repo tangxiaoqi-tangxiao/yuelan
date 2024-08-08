@@ -68,19 +68,45 @@ async function GetWebPageList(data) {
     // 发送响应回渲染进程
     return row;
 }
-async function GetWebPageListFavorites(id){
-    const sql = `SELECT Id,Favorites_Id,UUID,Title FROM WebPage WHERE Favorites_Id=?`;
-    let datas = await db.all(sql, [id]);
+
+/**
+ * 获取 Favorites_Id 为指定 id 的网页列表
+ * @param {number} id - 要检索的 Favorites_Id
+ * @throws {Error} 如果数据库检索失败，抛出错误
+ * @return {Promise<object[]>} 检索操作的结果，包含检索到的记录列表
+ */
+async function GetWebPageListFavorites(id) {
+    let sql = "";
+    if(id)
+    {
+        sql = `SELECT Id,Favorites_Id,UUID,Title FROM WebPage WHERE Favorites_Id=?`;
+    }else{
+        sql = `SELECT Id,Favorites_Id,UUID,Title FROM WebPage`;
+    }
+    let datas = await db.all(sql,id?[id]:[]);
     return datas;
 }
-//获取webPage页面数据
+
+
+/**
+ * 异步获取数据库中的网页记录
+ * @param {number} id - 要检索的网页ID
+ * @throws {Error} 如果数据库检索失败，抛出错误
+ * @return {Promise<object | null>} 检索操作的结果，包含检索到的记录或 null
+ */
 async function GetWebPage(id) {
     const sql = `SELECT * FROM WebPage WHERE Id=?`;
     let data = await db.get(sql, [id]);
     return data;
 }
 
-//删除webPage页面数据
+
+/**
+ * 删除数据库中的网页记录
+ * @param {number} id - 要删除的网页的 ID
+ * @throws {Error} 如果数据库删除失败，抛出错误
+ * @return {Promise<object>} 删除操作的结果，包含删除的记录的 UUID 和变更数量。如果没有找到要删除的记录，则返回一个包含变更数量为 0 的对象。
+ */
 async function DelWebPage(id) {
     let model = await GetWebPage(id);
     let result = null;
@@ -95,17 +121,37 @@ async function DelWebPage(id) {
     return result;
 }
 
-//更新标题
+
+/**
+ * 更新数据库中网页的标题
+ * @param {number} id - 要更新的网页的 ID
+ * @param {string} title - 新的网页标题
+ * @throws {Error} 如果数据库更新失败，抛出错误
+ * @return {Promise<object>} 更新操作的结果
+ */
 async function RenameTitleWebPage(id, title) {
     let result = await db.run("UPDATE WebPage SET Title=? WHERE Id=?", [title, id]);
     return result;
 }
 
-//设置文件夹
+
+/**
+ * 用于更新数据库中网页的收藏夹 ID 和更新日期
+ * @param {number} WebPage_Id - 要更新的网页 ID
+ * @param {number} Favorites_Id - 要设置的收藏夹 ID
+ * @returns {Object} - 包含更新操作结果的对象
+ */
 async function Classification(WebPage_Id, Favorites_Id) {
     let sql = `UPDATE WebPage SET Favorites_Id=?,UpdateDate=datetime('now', 'localtime') WHERE Id=?`;
     let result = await db.run(sql, [Favorites_Id, WebPage_Id]);
     return result;
 }
 
-export { initialization, GetWebPageList, GetWebPage, DelWebPage, RenameTitleWebPage, InsertWebPage ,GetWebPageListFavorites}
+
+//删除指定收藏夹的网页数据
+// async function Classification(WebPage_Id, Favorites_Id) {
+//     let sql = `UPDATE WebPage SET Favorites_Id=?,UpdateDate=datetime('now', 'localtime') WHERE Id=?`;
+//     let result = await db.run(sql, [Favorites_Id, WebPage_Id]);
+//     return result;
+// }
+export { initialization, GetWebPageList, GetWebPage, DelWebPage, RenameTitleWebPage, InsertWebPage, GetWebPageListFavorites }

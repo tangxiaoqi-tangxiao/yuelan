@@ -1,6 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron/renderer";
 // import { electronAPI } from "@electron-toolkit/preload";
-import { WebPageDataPath } from '../main/utils/globalVariable'
 
 // Custom APIs for renderer
 const Api = {
@@ -42,7 +41,7 @@ const Api = {
     Classification: (data) => ipcRenderer.invoke('index:DB:Classification', data),
   },
   File: {
-    WebPageDataPath: WebPageDataPath
+    WebPageDataPath: ipcRenderer.invoke('index:globalVariable:WebPageDataPath')
   },
   RightClickMenu: {
     OpenWebPage: (UUID) => ipcRenderer.invoke("index:RightClickMenu:OpenWebPage", UUID),

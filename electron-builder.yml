@@ -1,5 +1,5 @@
 appId: com.electron.app
-productName: yuelan
+productName: 阅览
 directories:
   buildResources: build
 files:

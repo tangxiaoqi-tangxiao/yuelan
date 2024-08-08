@@ -1,5 +1,5 @@
 import sqlite3 from 'sqlite3';
-import yuelan_db3 from '../../../resources/Data/yuelan.db3?asset&asarUnpack'
+import {yuelan_db3_Path} from './globalVariable'
 
 const sqlite = sqlite3.verbose();
 
@@ -76,6 +76,6 @@ class SQLiteHelper {
     }
 }
 
-const db = new SQLiteHelper(yuelan_db3);
+const db = new SQLiteHelper(yuelan_db3_Path);
 
 export default db;

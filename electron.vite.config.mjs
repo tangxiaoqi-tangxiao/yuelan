@@ -20,7 +20,7 @@ export default defineConfig({
   },
   //渲染进程文件
   preload: {
-    plugins: [bytecodePlugin()],
+    plugins: [],
     resolve: {
       alias: {
         "@preload": resolve("src/preload"),

@@ -4,8 +4,8 @@
             <div class="Menu">
                 <el-menu active-text-color="#409eff" background-color="rgb(243, 243, 243)" :router="true"
                     :default-active="_Menu" @select="FavoritesSelect" text-color="rgb(84, 84, 93)">
-                    <el-menu-item @contextmenu.prevent="showMenu($event)" class="background-menu" aria-selected="true"
-                        index="1" @click="Home">
+                    <el-menu-item @contextmenu.prevent="showMenu($event, 1)" class="background-menu"
+                        aria-selected="true" index="1" @click="Home">
                         <el-icon>
                             <House />
                         </el-icon>
@@ -146,7 +146,10 @@ const showMenu = function (event, index, data) {
 
         switch (index) {
             case 1:
-
+                _menuOptions.value = [
+                    { label: '导出全部', value: { index: 1, value: 1 } },
+                ];
+                _menuVisible.value = true;
                 break;
             case 2:
                 _menuOptions.value = [
@@ -168,10 +171,8 @@ const showMenu = function (event, index, data) {
                 _menuVisible.value = false;
                 break;
         }
-        console.log("data：",data)
         if (data) {
             _Favorites = data;
-            console.log(_Favorites)
         }
     });
 }
@@ -180,6 +181,25 @@ const handleMenuSelect = (optionValue) => {
     const index = optionValue.index;
     const value = optionValue.value;
     switch (index) {
+        case 1:
+            switch (value) {
+                case 1:
+                    Api.RightClickMenu.exportWebPageList(null).then(result => {
+                        if (result.code == 0) {
+                            ElMessage({
+                                message: '导出文件成功',
+                                type: 'success',
+                            });
+                        } else if (result.code != -1) {
+                            ElMessage.error("导出文件失败");
+                        }
+                    });
+                    break;
+
+                default:
+                    break;
+            }
+            break;
         case 2:
             switch (value) {
                 case 1:

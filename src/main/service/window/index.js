@@ -1,7 +1,7 @@
 import { ipcMain, app, Tray, Menu } from "electron";
 import path from 'path';
 import { SaveWindowSize, GetWindowSize, GetBootStart, SaveBootStart } from '@main/service/core/window';
-import logger from '@main/utils/logger'
+import logger from '@main/utils/logger';
 
 const WM_INITMENU = 0x0116;
 

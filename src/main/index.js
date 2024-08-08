@@ -36,6 +36,8 @@ function initialize() {
     //创建窗口和处理窗口事件
     createWindowAndWindowEvent();
 
+    // MainWindow.webContents.openDevTools();
+
     //创建资源窗口
     // RenderWindows.createResourceWin();
 
@@ -88,7 +90,7 @@ function createWindow() {
       //如果您的预加载脚本确实依赖于 Node，请重构它们以从渲染器中删除 Node 的使用，
       //或者为相关渲染器显式指定 sandbox： false
       //不依赖Node是指只能使用"electron/renderer"包
-      sandbox: false,
+      sandbox: true,
       //关闭可以让网页服务器访问本地文件（打包软件需要关闭）
       webSecurity: false
     },
