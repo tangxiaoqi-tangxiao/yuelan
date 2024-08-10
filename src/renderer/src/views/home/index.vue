@@ -76,9 +76,9 @@
                 <div v-if="_SearchShow" style="margin-left: 20px;margin-top: 10px;">
                     <el-input v-model="_input" size="large" @keyup.enter="Submit" :suffix-icon="Search"
                         style="width: 400px" placeholder="搜索网页" />
-                    <span style="float: right;margin-right: 20px;">
+                    <!-- <span style="float: right;margin-right: 20px;">
                         <el-button type="primary" plain>上传网页</el-button>
-                    </span>
+                    </span> -->
                 </div>
             </div>
             <div id="NewPage">

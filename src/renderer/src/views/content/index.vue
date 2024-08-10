@@ -4,7 +4,7 @@
             <div style="height: 100%;display: flex;flex-direction: column;align-content: flex-start;">
                 <p style="color:#D1D1D1;padding-left: 50px;font-size:2vw">这里什么都没有,只有一片星辰大海</p>
                 <img src="../../assets/image/an_astronaut.svg" alt="SVG Image"
-                    style="margin: auto auto;display: block;width: 60vw;height: 60vh;" />
+                    style="margin: auto auto;display: block;width: 60vw;height: 60vh;user-select: none; pointer-events: none;-webkit-user-drag:none;" />
             </div>
         </template>
         <template v-else>

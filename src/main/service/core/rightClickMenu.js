@@ -45,7 +45,7 @@ function openWebPage(UUID) {
 function exportWebPage(id) {
     return new Promise(async (resolve, reject) => {
         // 显示文件夹选择器对话框
-        let Dialog = await dialog.showOpenDialog({
+        let Dialog = await dialog.showOpenDialog(global.MainWindow,{
             properties: ['openDirectory'] // 只允许选择文件夹
         });
 
@@ -98,7 +98,7 @@ function exportWebPage(id) {
 async function exportWebPageList(id) {
     return new Promise(async (resolve, reject) => {
         // 显示文件夹选择器对话框
-        let Dialog = await dialog.showOpenDialog({
+        let Dialog = await dialog.showOpenDialog(global.MainWindow,{
             properties: ['openDirectory'] // 只允许选择文件夹
         });
 
@@ -202,7 +202,7 @@ async function InsertFavorites(data) {
 async function exportHtml(id) {
     return new Promise(async (resolve, reject) => {
         // 显示文件夹选择器对话框
-        let Dialog = await dialog.showOpenDialog({
+        let Dialog = await dialog.showOpenDialog(global.MainWindow,{
             properties: ['openDirectory'] // 只允许选择文件夹
         });
 
