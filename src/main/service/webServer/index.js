@@ -8,7 +8,7 @@ import { InsertWebPage, DelWebPage, GetWebPage } from '@main/service/core/webPag
 import { formatDateTime } from '@main/utils/common';
 import logger from '@main/utils/logger';
 import { WebPageDataPath } from '@main/utils/globalVariable';
-import { WindowMessage } from '@main/service/core/window.js';
+import { WindowMessage } from '@main/service/core/System';
 
 //全局变量
 const app = express();
@@ -83,7 +83,7 @@ app.post("/SendMhtml", upload.single('file'), async (req, res) => {
                         }
                         //更新默认窗口页面数据
                         let data = await GetWebPage(id);
-                        WindowMessage('MonitorNewWebPage', data);
+                        WindowMessage('WebContents:MonitorNewWebPage', data);
                     });
                     res.status(200).send('');
                 }

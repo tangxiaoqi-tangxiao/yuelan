@@ -95,7 +95,8 @@ onMounted(async () => {
 
     //更新数据
     loadContent(_index);
-    // 组件挂载后添加监听器  
+
+    // 组件挂载后添加监听器
     window.addEventListener('resize', handleResize);
 
     //鼠标右键菜单取消事件

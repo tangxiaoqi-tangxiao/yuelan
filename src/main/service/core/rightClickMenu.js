@@ -4,7 +4,7 @@ import { WebPageDataPath } from '@main/utils/globalVariable.js';
 import fse from 'fs-extra';
 import { GetWebPage, DelWebPage as DelWebPageDB, RenameTitleWebPage as RenameTitleWebPageDB, GetWebPageListFavorites } from './webPage';
 import { InsertFavorites as InsertFavoritesDB } from './favorites';
-import { WindowMessage } from './window';
+import { WindowMessage } from './System';
 import { sanitizeFilename, getFileVersionedName } from '@main/utils/common.js';
 import { originalResourcesPath } from '@main/utils/globalVariable.js';
 
@@ -184,7 +184,7 @@ async function RenameTitleWebPage(id, title) {
 async function InsertFavorites(data) {
     let result = await InsertFavoritesDB(data);
     if (result.changes > 0) {
-        WindowMessage("MonitorFavorites");
+        WindowMessage("WebContents:MonitorFavorites");
         return {
             code: 0,
             data: null,

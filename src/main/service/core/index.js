@@ -1,7 +1,7 @@
 import { initialization as initializationWebPage, GetWebPageList } from './webPage';
 import { initialization as initializationFavorites } from './favorites';
 import { initialization as initializationRightClickMenu } from './rightClickMenu';
-import { initialization as initializationWindow } from './window'
+import { initialization as initializationWindow } from './System';
 
 
 function initialization() {

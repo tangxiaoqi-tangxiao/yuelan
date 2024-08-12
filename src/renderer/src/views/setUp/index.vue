@@ -10,6 +10,11 @@
                 </div>
 
                 <div style="display: flex;align-items: center;margin-top: 20px;">
+                    <span>开启CPU加速<span style="color: #8f95a2;font-size: 14px;">(重启软件生效)</span></span>
+                    <el-switch v-model="_value" @change="switchChange" style="margin-left: auto;" />
+                </div>
+
+                <div style="display: flex;align-items: center;margin-top: 20px;">
                     <span>文件保存路径</span>
                     <el-input v-model="_path" style="margin-left: auto;width: 50%;" @input="reset" />
                 </div>
@@ -33,7 +38,7 @@ onMounted(() => {
         } else {
             _value.value = false;
         }
-        IsSwitchChange = true;
+        _IsSwitchChange = true;
     });
 
     Api.FilePath.resourcesPath.then((data) => {

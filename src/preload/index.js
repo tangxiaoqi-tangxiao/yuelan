@@ -28,8 +28,8 @@ const Api = {
   //   }
   // },
   WebContents: {
-    MonitorFavorites: (callback) => ipcRenderer.on('MonitorFavorites', (_event, value) => callback(value)),
-    MonitorNewWebPage: (callback) => ipcRenderer.on('MonitorNewWebPage', (_event, value) => callback(value)),
+    MonitorFavorites: (callback) => ipcRenderer.on('WebContents:MonitorFavorites', (_event, value) => callback(value)),
+    MonitorNewWebPage: (callback) => ipcRenderer.on('WebContents:MonitorNewWebPage', (_event, value) => callback(value)),
   },
   System: {
     BootStart: (data) => ipcRenderer.invoke('index:System:BootStart', data),
