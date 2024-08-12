@@ -40,8 +40,9 @@ const Api = {
     GetFavoritesList: (data) => ipcRenderer.invoke('index:DB:GetFavoritesList', data),
     Classification: (data) => ipcRenderer.invoke('index:DB:Classification', data),
   },
-  File: {
-    WebPageDataPath: ipcRenderer.invoke('index:globalVariable:WebPageDataPath')
+  FilePath: {
+    WebPageDataPath: ipcRenderer.invoke('index:globalVariable:WebPageDataPath'),
+    resourcesPath: ipcRenderer.invoke('index:globalVariable:resourcesPath'),
   },
   RightClickMenu: {
     OpenWebPage: (UUID) => ipcRenderer.invoke("index:RightClickMenu:OpenWebPage", UUID),

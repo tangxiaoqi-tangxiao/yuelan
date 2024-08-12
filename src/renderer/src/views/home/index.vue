@@ -1,70 +1,74 @@
 <template>
     <div id="Home">
-        <div id="Navigation">
-            <div class="Menu">
-                <el-menu active-text-color="#409eff" background-color="rgb(243, 243, 243)" :router="true"
-                    :default-active="_Menu" @select="FavoritesSelect" text-color="rgb(84, 84, 93)">
-                    <el-menu-item @contextmenu.prevent="showMenu($event, 1)" class="background-menu"
-                        aria-selected="true" index="1" @click="Home">
-                        <el-icon>
-                            <House />
-                        </el-icon>
-                        <span>最近</span>
-                    </el-menu-item>
-                    <!-- <el-menu-item index="2">
+        <div id="Navigation" ref="_Navigation">
+            <div style="width: calc(100% - 10px);display: flex;flex-direction: column;">
+                <div class="Menu">
+                    <el-menu active-text-color="#409eff" background-color="rgb(243, 243, 243)" :router="true"
+                        :default-active="_Menu" @select="FavoritesSelect" text-color="rgb(84, 84, 93)">
+                        <el-menu-item @contextmenu.prevent="showMenu($event, 1)" class="background-menu"
+                            aria-selected="true" index="1" @click="Home">
+                            <el-icon>
+                                <House />
+                            </el-icon>
+                            <span>最近</span>
+                        </el-menu-item>
+                        <!-- <el-menu-item index="2">
                         <el-icon><Collection /></el-icon>
                         <span>收藏夹</span>
                     </el-menu-item> -->
-                    <el-sub-menu index="2">
-                        <template #title>
-                            <el-icon>
-                                <Collection />
-                            </el-icon>
-                            <span>收藏夹</span>
-                        </template>
-                        <template v-for="(item, index) in _FavoritesArr">
-                            <el-menu-item @contextmenu.prevent="showMenu($event, 3, item)"
-                                @click="toggleFavorites(item.Id)" class="background-menu" :index="`1-${index + 1}`">
+                        <el-sub-menu index="2">
+                            <template #title>
                                 <el-icon>
-                                    <Tickets />
+                                    <Collection />
                                 </el-icon>
-                                <el-text style="width: 100%;" truncated>{{ item.Name
-                                    }}</el-text>
-                            </el-menu-item>
-                        </template>
-                    </el-sub-menu>
-                    <el-menu-item disabled @contextmenu.prevent="showMenu($event)" class="background-menu" index="3">
-                        <el-icon>
-                            <PriceTag />
-                        </el-icon>
-                        <span>标签</span>
-                    </el-menu-item>
-                </el-menu>
-            </div>
-            <!-- 设置 -->
-            <div class="setUp">
-                <el-menu active-text-color="#409eff" background-color="rgb(243, 243, 243)" @select="SetUpSelect"
-                    :router="true" :default-active="_setUp" text-color="rgb(84, 84, 93)">
-                    <el-menu-item @click="toggleSetUp" class="background-menu" aria-selected="true" index="1">
-                        <el-icon>
+                                <span>收藏夹</span>
+                            </template>
+                            <template v-for="(item, index) in _FavoritesArr">
+                                <el-menu-item @contextmenu.prevent="showMenu($event, 3, item)"
+                                    @click="toggleFavorites(item.Id)" class="background-menu" :index="`1-${index + 1}`">
+                                    <el-icon>
+                                        <Tickets />
+                                    </el-icon>
+                                    <el-text style="width: 100%;" truncated>{{ item.Name
+                                        }}</el-text>
+                                </el-menu-item>
+                            </template>
+                        </el-sub-menu>
+                        <el-menu-item disabled @contextmenu.prevent="showMenu($event)" class="background-menu"
+                            index="3">
                             <el-icon>
-                                <Tools />
+                                <PriceTag />
                             </el-icon>
-                        </el-icon>
-                        <span>设置</span>
-                    </el-menu-item>
-                    <el-menu-item @click="toggleSetUp" class="background-menu" aria-selected="true" index="2">
-                        <el-icon>
+                            <span>标签</span>
+                        </el-menu-item>
+                    </el-menu>
+                </div>
+                <!-- 设置 -->
+                <div class="setUp">
+                    <el-menu active-text-color="#409eff" background-color="rgb(243, 243, 243)" @select="SetUpSelect"
+                        :router="true" :default-active="_setUp" text-color="rgb(84, 84, 93)">
+                        <el-menu-item @click="toggleSetUp" class="background-menu" aria-selected="true" index="1">
                             <el-icon>
-                                <InfoFilled />
+                                <el-icon>
+                                    <Tools />
+                                </el-icon>
                             </el-icon>
-                        </el-icon>
-                        <span>关于</span>
-                    </el-menu-item>
-                </el-menu>
+                            <span>设置</span>
+                        </el-menu-item>
+                        <el-menu-item @click="toggleSetUp" class="background-menu" aria-selected="true" index="2">
+                            <el-icon>
+                                <el-icon>
+                                    <InfoFilled />
+                                </el-icon>
+                            </el-icon>
+                            <span>关于</span>
+                        </el-menu-item>
+                    </el-menu>
+                </div>
+                <RightClickMenu v-if="_menuVisible" :x="_menuX" :y="_menuY" :options="_menuOptions"
+                    @close="_menuVisible = false" @select="handleMenuSelect" />
             </div>
-            <RightClickMenu v-if="_menuVisible" :x="_menuX" :y="_menuY" :options="_menuOptions"
-                @close="_menuVisible = false" @select="handleMenuSelect" />
+            <div class="resizer" @mousedown="startResizing"></div>
         </div>
         <div id="Content">
             <div>
@@ -95,11 +99,11 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { PriceTag, House, Collection, Search, Tickets, InfoFilled, Tools } from '@element-plus/icons-vue';
 import WindowButton from '@/components/WindowButton/WindowButton.vue';
 import RightClickMenu from '@/components/RightClickMenu/RightClickMenu.vue';
-import { fa } from 'element-plus/es/locales.mjs';
 
 const _router = useRouter();
 
 const _input = ref(null);
+const _Navigation = ref(null);
 const _FavoritesArr = ref([]);
 const _indexKey = ref("");
 const _Menu = ref("1");
@@ -114,6 +118,9 @@ const _menuOptions = ref([]);
 //全局变量
 let _Favorites_Id = 0;
 let _Favorites = null;
+let _isResizing = false;
+let _startX = 0; // 记录鼠标初始点击位置
+let _startWidth = 0; // 记录元素初始宽度
 
 onMounted(() => {
     Home();
@@ -134,6 +141,9 @@ onUnmounted(() => {
     window.removeEventListener('contextmenu', handleClickOutside(true));//右键
     window.removeEventListener('blur', handleClickOutside(false));
     document.querySelector("#NewPage")?.removeEventListener('scroll', handleClickOutside(false));
+    // 清除事件监听器，防止内存泄漏
+    document.removeEventListener('mousemove', resize);
+    document.removeEventListener('mouseup', stopResizing);
 });
 
 //打开右键菜单
@@ -300,7 +310,7 @@ Api.WebContents.MonitorFavorites((data) => {
 function SetindexKey(value) {
     _indexKey.value = value;
 }
-
+//创建收藏夹
 function NewFolder() {
     ElMessageBox.prompt('收藏夹名称：', '', {
         confirmButtonText: '确定',
@@ -323,6 +333,32 @@ function NewFolder() {
         });
 }
 
+const startResizing = (e) => {
+    _isResizing = true;
+    _startX = e.clientX;
+    _startWidth = _Navigation.value.offsetWidth;
+    document.addEventListener('mousemove', resize);
+    document.addEventListener('mouseup', stopResizing);
+};
+
+const resize = (e) => {
+    if (!_isResizing) return;
+    // 定义最小宽度和最大宽度常量
+    const minWidth = 200; // 假设最小宽度为100px
+    const maxWidth = 300; // 假设最大宽度为500px
+
+    const newWidth = _startWidth + (e.clientX - _startX);
+    // 确保新的宽度在最小和最大宽度之间
+    if (newWidth >= minWidth && newWidth <= maxWidth) {
+        _Navigation.value.style.width = newWidth + 'px';
+    }
+};
+
+const stopResizing = () => {
+    _isResizing = false;
+    document.removeEventListener('mousemove', resize);
+    document.removeEventListener('mouseup', stopResizing);
+};
 </script>
 
 <style scoped>
@@ -389,7 +425,7 @@ function NewFolder() {
 
 /* 内容样式 */
 #Content {
-    width: calc(100% - 210px);
+    flex-grow: 1;
     height: 100%;
     background-color: rgb(255, 255, 255);
 }
@@ -437,5 +473,23 @@ function NewFolder() {
 
 .setUp>>>.el-menu--vertical {
     border-right: 0;
+}
+
+#Navigation {
+    display: flex;
+    flex-direction: row;
+    width: 200px;
+}
+
+#Navigation .resizer {
+    content: '';
+    width: 10px;
+    height: 100%;
+    background: transparent;
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
+    cursor: col-resize;
+    background-color: #eee;
+    background-repeat: no-repeat;
+    background-position: 50%;
 }
 </style>

@@ -11,7 +11,7 @@
             <div id="content" ref="_content">
                 <template v-for="item in _dataArr">
                     <el-card shadow="hover" @contextmenu.prevent="showMenu($event, item)"
-                        style="max-width: 280px;cursor:pointer;user-select: none;" class="card"
+                        style="max-width: 310px;cursor:pointer;user-select: none;" class="card"
                         @click="ClickOpenWebPage($event, item)">
                         <el-text line-clamp="2" size="large" style="font-weight: bold;">{{ item.title }}</el-text><br>
                         <el-text line-clamp="3" size="small" style="color:rgb(130, 130, 130);width: 100%;">{{
@@ -91,7 +91,7 @@ watch(_dataArr.value, (newQuestion, oldQuestion) => {
 
 onMounted(async () => {
     //获取文件地址
-    initializeFilePath(await Api.File.WebPageDataPath);
+    initializeFilePath(await Api.FilePath.WebPageDataPath);
 
     //更新数据
     loadContent(_index);

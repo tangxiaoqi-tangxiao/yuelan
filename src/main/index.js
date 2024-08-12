@@ -12,7 +12,7 @@ import Core from '@main/service/core/index.js'
 let MainWindow = null;
 
 //禁用GPU加速
-app.disableHardwareAcceleration();
+// app.disableHardwareAcceleration();
 
 //单例
 appSingleton();

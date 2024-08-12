@@ -6,12 +6,12 @@
             <div style="display: flex; flex-direction: column;">
                 <div style="display: flex;align-items: center;">
                     <span>开机自启动</span>
-                    <el-switch v-model="value" @change="switchChange" style="margin-left: auto;" />
+                    <el-switch v-model="_value" @change="switchChange" style="margin-left: auto;" />
                 </div>
 
                 <div style="display: flex;align-items: center;margin-top: 20px;">
                     <span>文件保存路径</span>
-                    <el-input v-model="path" style="margin-left: auto;width: 50%;" />
+                    <el-input v-model="_path" style="margin-left: auto;width: 50%;" @input="reset" />
                 </div>
             </div>
         </div>
@@ -20,26 +20,36 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-const value = ref(null);
-const path = ref("");
+const _value = ref(null);
+const _path = ref("");
 
-let IsSwitchChange = false;
+let _IsSwitchChange = false;
+let _resourcesPath = "";
 
 onMounted(() => {
     Api.System.GetBootStart().then((data) => {
         if (data.Value == "1") {
-            value.value = true;
+            _value.value = true;
         } else {
-            value.value = false;
+            _value.value = false;
         }
         IsSwitchChange = true;
+    });
+
+    Api.FilePath.resourcesPath.then((data) => {
+        _path.value = data;
+        _resourcesPath = data;
     });
 });
 
 function switchChange(bool, str) {
-    if (IsSwitchChange) {
+    if (_IsSwitchChange) {
         Api.System.BootStart(bool);
     }
+}
+
+function reset() {
+    _path.value = _resourcesPath;
 }
 </script>
 

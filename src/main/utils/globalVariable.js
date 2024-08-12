@@ -8,16 +8,16 @@ const dbStr = "yuelan.db3";
 const userDataPath = app.getPath('userData');
 const originalResourcesPath = path.join(__dirname.replace("app.asar", "app.asar.unpacked"), '..', '..', resourcesStr);
 
-
-const WebPageDataPath = path.join(userDataPath, resourcesStr, 'WebPageData');
 const resourcesPath = path.join(userDataPath, resourcesStr);
-const yuelan_db3_Path = path.join(userDataPath, resourcesStr, "Data", dbStr);
+const WebPageDataPath = path.join(resourcesPath, 'WebPageData');
+const yuelan_db3_Path = path.join(resourcesPath, "Data", dbStr);
 
 CheckTheData();
 
 export { originalResourcesPath, resourcesPath, WebPageDataPath, yuelan_db3_Path };
 
 ipcMain.handle("index:globalVariable:WebPageDataPath", () => WebPageDataPath);
+ipcMain.handle("index:globalVariable:resourcesPath", () => resourcesPath);
 
 // 定义 CheckTheData 函数用于检查数据库文件是否存在，不存在则从指定位置复制
 function CheckTheData() {
