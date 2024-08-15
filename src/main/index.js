@@ -5,14 +5,14 @@ import icon from "../../resources/icon.png?asset";
 import RenderWindows from "@main/service/resourceWin/resourceWin";
 import WindowManage from "./service/window/index";
 import { MonitorFile } from "./service/resourceWin/webFile";
-import WebServer from '@main/service/webServer/index.js';
+import { WebServer } from '@main/service/webServer/index.js';
 import Core from '@main/service/core/index.js'
 
 //全局变量
 let MainWindow = null;
 
 //禁用GPU加速
-// app.disableHardwareAcceleration();
+app.disableHardwareAcceleration();
 
 //单例
 appSingleton();

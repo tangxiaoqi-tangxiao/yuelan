@@ -34,6 +34,9 @@ const Api = {
   System: {
     BootStart: (data) => ipcRenderer.invoke('index:System:BootStart', data),
     GetBootStart: () => ipcRenderer.invoke('index:System:GetBootStart'),
+    GetGPU: () => ipcRenderer.invoke('index:System:GetGPU'),
+    SaveGPU: (data) => ipcRenderer.invoke('index:System:SaveGPU',data),
+    OpenWebServerPort: () => ipcRenderer.invoke('index:System:OpenWebServerPort'),
   },
   DB: {
     GetWebPageList: (data) => ipcRenderer.invoke('index:DB:GetWebPageList', data),

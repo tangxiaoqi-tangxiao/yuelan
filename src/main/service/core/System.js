@@ -1,9 +1,13 @@
-import { ipcMain, app } from "electron";
+import { ipcMain, app ,shell } from "electron";
 import db from '@main/utils/sqliteHelper';
+import { UUID } from '@main/utils/globalVariable';
 
 function initialization() {
     ipcMain.handle('index:System:BootStart', async (event, data) => BootStart(data));
     ipcMain.handle('index:System:GetBootStart', async (event) => GetBootStart());
+    ipcMain.handle('index:System:GetGPU', async (event) => GetGPU());
+    ipcMain.handle('index:System:SaveGPU', async (event, data) => SaveGPU(data));
+    ipcMain.handle('index:System:OpenWebServerPort', async (event) => await OpenWebServerPort());
 }
 
 async function SaveWindowSize(params) {
@@ -48,10 +52,47 @@ async function SaveBootStart(bool) {
     }
 }
 
+async function GetGPU() {
+    const key = "GPU";
+    let model = await db.get(`SELECT * FROM "Window" WHERE "Key"=?`, [key]);
+    return model;
+}
+
+async function SaveGPU(bool) {
+    const key = "GPU";
+    let result = await GetGPU();
+    if (result) {
+        db.run(`UPDATE "Window" SET "Value" = ? WHERE "KEY"=?`, [bool, key]);
+    } else {
+        db.run(`INSERT INTO "Window" VALUES(NULL,?,?)`, [key, bool]);
+    }
+}
+
+async function GetWebServerPort() {
+    const key = "WebServerPort";
+    let model = await db.get(`SELECT * FROM "Window" WHERE "Key"=?`, [key]);
+    return model;
+}
+
+async function SaveWebServerPort(Port) {
+    const key = "WebServerPort";
+    let result = await GetWebServerPort();
+    if (result) {
+        db.run(`UPDATE "Window" SET "Value" = ? WHERE "KEY"=?`, [Port, key]);
+    } else {
+        db.run(`INSERT INTO "Window" VALUES(NULL,?,?)`, [key, Port]);
+    }
+}
+
+async function OpenWebServerPort() {
+    let model = await GetWebServerPort();
+    shell.openExternal(`http://localhost:${model.Value}?uuid=${UUID}`);
+}
+
 function WindowMessage(event, data) {
     if (global.MainWindow) {
         global.MainWindow.webContents.send(event, data)
     }
 }
 
-export { initialization, SaveWindowSize, GetWindowSize, GetBootStart, SaveBootStart, WindowMessage };
+export { initialization, SaveWindowSize, GetWindowSize, GetBootStart, SaveBootStart, GetGPU,SaveWebServerPort,GetWebServerPort, WindowMessage };

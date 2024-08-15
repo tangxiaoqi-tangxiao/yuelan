@@ -1,5 +1,6 @@
 import fse from 'fs-extra';
 import path from 'path';
+import net from 'net';
 
 //格式化日期
 function formatDateTime(date = new Date(), format = 'YYYY-MM-DD HH:mm:ss.sss') {
@@ -79,4 +80,27 @@ function getFileVersionedName(filePath) {
     return newBase + ext;
 }
 
-export { formatDateTime, sanitizeFilename ,getFileVersionedName};
+function checkPort(port, host = '127.0.0.1') {
+    return new Promise((resolve, reject) => {
+        const server = net.createServer();
+
+        server.once('error', (err) => {
+            if (err.code === 'EADDRINUSE') {
+                // 端口被占用
+                resolve(true);
+            } else {
+                reject(err);
+            }
+        });
+
+        server.once('listening', () => {
+            // 端口未被占用
+            server.close();
+            resolve(false);
+        });
+
+        server.listen(port, host);
+    });
+}
+
+export { formatDateTime, sanitizeFilename, getFileVersionedName,checkPort };

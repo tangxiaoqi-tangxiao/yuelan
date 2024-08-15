@@ -1,3 +1,4 @@
+import { shell } from "electron";
 import express from 'express';
 import multer from 'multer';
 import bodyParser, { json } from 'body-parser';
@@ -5,15 +6,18 @@ import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 import fs from 'fs';
 import { InsertWebPage, DelWebPage, GetWebPage } from '@main/service/core/webPage';
-import { formatDateTime } from '@main/utils/common';
+import { formatDateTime, checkPort } from '@main/utils/common';
 import logger from '@main/utils/logger';
-import { WebPageDataPath } from '@main/utils/globalVariable';
-import { WindowMessage } from '@main/service/core/System';
+import { WebPageDataPath,UUID } from '@main/utils/globalVariable';
+import { WindowMessage, GetWebServerPort, SaveWebServerPort } from '@main/service/core/System';
 
 //全局变量
 const app = express();
 const WebPagePath = path.join(WebPageDataPath, "WebPage");
 const ImgsPath = path.join(WebPageDataPath, "Imgs");
+
+//全局可变变量
+let server = null;
 
 // 解析 JSON 请求体
 app.use(bodyParser.json({ limit: '2gb' }));
@@ -45,6 +49,13 @@ app.use((req, res, next) => {
     } else {
         next();
     }
+});
+
+app.get("/", (req, res) => {
+    if(req.query.uuid == UUID) {
+        res.send("Web 服务启动成功");
+    }
+    res.status(404).send('');
 });
 
 app.post("/SendMhtml", upload.single('file'), async (req, res) => {
@@ -111,8 +122,68 @@ function ensureDirExists(dirPath) {
     }
 }
 
-export default () => {
-    const server = app.listen(8080, () => {
-        console.log('Web 服务地址: http://localhost:8080/');
+// Express应用的启动函数
+function startServer(port) {
+    console.log("端口：", port);
+    return new Promise((resolve, reject) => {
+        server = app.listen(port, () => {
+            let port_ = server.address().port;
+            if (port == 0) {
+                SaveWebServerPort(port_);
+                shell.openExternal(`http://localhost:${port_}?uuid=${UUID}`);
+            }
+            console.log(`Web 服务地址: http://localhost:${port_}/`);
+            resolve();
+        }).on("error", (err) => {
+            server = null;
+            if (err.code === "EADDRINUSE") {
+                logger.error("端口已被占用");
+                reject("端口已被占用");
+            } else {
+                logger.error("启动服务器时出错:", err)
+            }
+            reject(err);
+        });
     });
-}
+};
+
+// 重新设置端口并重启服务器的函数
+function reassignPort(newPort) {
+    return new Promise((resolve, reject) => {
+        if (!(newPort >= 0 && newPort <= 65535)) {
+            reject("端口号不合法");
+        }
+
+        if (server) {
+            server.close(() => {
+                // 重新启动服务器
+                startServer(newPort)
+                    .then(resolve)
+                    .catch(reject);
+            });
+        } else {
+            // 重新启动服务器
+            startServer(newPort)
+                .then(resolve)
+                .catch(reject);
+        }
+    });
+};
+
+export const WebServer = async () => {
+    let model = await GetWebServerPort();
+    let Port = 0;
+    if (model) {
+        try {
+            let result = await checkPort(model.Value);
+            if (!result) {
+                Port = model.Value;
+            }
+        } catch (err) {
+            logger.error("端口检查失败");
+        }
+    }
+    startServer(Port);
+};
+
+// export { reassignPort };
