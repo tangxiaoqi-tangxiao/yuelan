@@ -54,8 +54,9 @@ app.use((req, res, next) => {
 app.get("/", (req, res) => {
     if(req.query.uuid == UUID) {
         res.send("Web 服务启动成功");
+    }else{
+        res.status(404).send('');
     }
-    res.status(404).send('');
 });
 
 app.post("/SendMhtml", upload.single('file'), async (req, res) => {
