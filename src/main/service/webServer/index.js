@@ -8,7 +8,7 @@ import fs from 'fs';
 import { InsertWebPage, DelWebPage, GetWebPage } from '@main/service/core/webPage';
 import { formatDateTime, checkPort } from '@main/utils/common';
 import logger from '@main/utils/logger';
-import { WebPageDataPath,UUID } from '@main/utils/globalVariable';
+import { WebPageDataPath, UUID } from '@main/utils/globalVariable';
 import { WindowMessage, GetWebServerPort, SaveWebServerPort } from '@main/service/core/System';
 
 //全局变量
@@ -52,9 +52,9 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-    if(req.query.uuid == UUID) {
+    if (req.query.uuid == UUID) {
         res.send("Web 服务启动成功");
-    }else{
+    } else {
         res.status(404).send('');
     }
 });
@@ -68,7 +68,7 @@ app.post("/SendMhtml", upload.single('file'), async (req, res) => {
     let uuid = `${uuidv4()}_${formatDateTime(undefined, "YYYYMMDDHHmmss")}`;
     try {
         // 插入数据
-        let result = await InsertWebPage({ uuid, title: jsonData.title, contentText: jsonData.contentText });
+        let result = await InsertWebPage({ uuid, title: jsonData.title, contentText: jsonData.contentText, Url: jsonData.Url });
         if (result.changes > 0) {
             let id = result.id;
             ensureDirExists(WebPagePath);

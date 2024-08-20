@@ -5,7 +5,7 @@ import fse from 'fs-extra';
 import { GetWebPage, DelWebPage as DelWebPageDB, RenameTitleWebPage as RenameTitleWebPageDB, GetWebPageListFavorites } from './webPage';
 import { InsertFavorites as InsertFavoritesDB } from './favorites';
 import { WindowMessage } from './System';
-import { sanitizeFilename, getFileVersionedName } from '@main/utils/common.js';
+import { sanitizeFilename, getFileVersionedName, isStringEmpty } from '@main/utils/common.js';
 import { originalResourcesPath } from '@main/utils/globalVariable.js';
 
 const { mhtmlTohtml } = require(path.join(originalResourcesPath, 'Node', 'index'));
@@ -14,13 +14,14 @@ const WebPagePath = path.join(WebPageDataPath, "WebPage");
 const ImgsPath = path.join(WebPageDataPath, "Imgs");
 
 function initialization() {
-    ipcMain.handle("index:RightClickMenu:OpenWebPage", (event, UUID) => openWebPage(UUID));
-    ipcMain.handle("index:RightClickMenu:exportWebPage", async (event, id) => exportWebPage(id));
-    ipcMain.handle("index:RightClickMenu:DelWebPage", async (event, id) => DelWebPage(id));
+    ipcMain.handle("index:RightClickMenu:OpenWebPage", (event, data) => openWebPage(data));
+    ipcMain.handle("index:RightClickMenu:exportWebPage", async (event, data) => exportWebPage(data));
+    ipcMain.handle("index:RightClickMenu:DelWebPage", async (event, data) => DelWebPage(data));
     ipcMain.handle("index:RightClickMenu:RenameTitleWebPage", async (event, data) => RenameTitleWebPage(data.id, data.title));
     ipcMain.handle("index:RightClickMenu:exportWebPageList", async (event, data) => exportWebPageList(data));
     ipcMain.handle('index:RightClickMenu:InsertFavorites', async (event, data) => InsertFavorites(data));
     ipcMain.handle('index:RightClickMenu:exportHtml', async (event, data) => exportHtml(data));
+    ipcMain.handle('index:RightClickMenu:openWebPageUrl', async (event, data) => openWebPageUrl(data));
 }
 
 //使用浏览器打开web文件
@@ -41,11 +42,36 @@ function openWebPage(UUID) {
     };
 }
 
+//使用浏览器打开Url
+async function openWebPageUrl(id) {
+    let model = await GetWebPage(id);
+    if (!model || isStringEmpty(model.Url)) {
+        return {
+            code: 1,
+            data: null,
+            message: "网页原地址为空"
+        };
+    }
+
+    // 检查URL长度是否超过2000个字符
+    if (model.Url.length > 2000) {
+        // 截断URL到2000个字符，并在末尾添加'...'表示截断
+        return model.Url.slice(0, 2000);
+    }
+
+    shell.openExternal(model.Url);
+    return {
+        code: 0,
+        data: null,
+        message: ""
+    };
+}
+
 //导出web文件
 function exportWebPage(id) {
     return new Promise(async (resolve, reject) => {
         // 显示文件夹选择器对话框
-        let Dialog = await dialog.showOpenDialog(global.MainWindow,{
+        let Dialog = await dialog.showOpenDialog(global.MainWindow, {
             properties: ['openDirectory'] // 只允许选择文件夹
         });
 
@@ -98,7 +124,7 @@ function exportWebPage(id) {
 async function exportWebPageList(id) {
     return new Promise(async (resolve, reject) => {
         // 显示文件夹选择器对话框
-        let Dialog = await dialog.showOpenDialog(global.MainWindow,{
+        let Dialog = await dialog.showOpenDialog(global.MainWindow, {
             properties: ['openDirectory'] // 只允许选择文件夹
         });
 
@@ -202,7 +228,7 @@ async function InsertFavorites(data) {
 async function exportHtml(id) {
     return new Promise(async (resolve, reject) => {
         // 显示文件夹选择器对话框
-        let Dialog = await dialog.showOpenDialog(global.MainWindow,{
+        let Dialog = await dialog.showOpenDialog(global.MainWindow, {
             properties: ['openDirectory'] // 只允许选择文件夹
         });
 
@@ -265,7 +291,7 @@ async function copyFiles(arr) {
     });
 }
 
-async function copyFile(inputPath, outputPath){
+async function copyFile(inputPath, outputPath) {
     return new Promise(async (resolve, reject) => {
         fse.copy(inputPath, outputPath, err => {
             if (err) reject(err);

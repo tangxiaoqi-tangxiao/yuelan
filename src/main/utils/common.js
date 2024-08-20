@@ -103,4 +103,13 @@ function checkPort(port, host = '127.0.0.1') {
     });
 }
 
-export { formatDateTime, sanitizeFilename, getFileVersionedName,checkPort };
+function isStringEmpty(str) {
+    // 检查是否为null或undefined
+    if (str === null || str === undefined) {
+        return true;
+    }
+    // 检查是否为只包含空格的字符串
+    return str.trim() === '';
+}
+
+export { formatDateTime, sanitizeFilename, getFileVersionedName, checkPort, isStringEmpty };

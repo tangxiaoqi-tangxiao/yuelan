@@ -16,7 +16,14 @@
 
                 <div style="display: flex;align-items: center;margin-top: 20px;">
                     <span>连接浏览器插件<span style="color: #8f95a2;font-size: 14px;">(用于和浏览器插件通信)</span></span>
-                    <el-button style="margin-left: auto;" @click="OpenWebServerPort">连接</el-button>
+                    <div style="margin-left: auto;">
+                        <el-select v-model="_browser" placeholder="Select" size="small" style="width: 100px;margin-right: 20px;">
+                            <el-option label="默认浏览器" value="0" />
+                            <el-option label="edge" value="1" />
+                            <el-option label="chrome" value="2" />
+                        </el-select>
+                        <el-button @click="OpenWebServerPort">连接</el-button>
+                    </div>
                 </div>
 
                 <div style="display: flex;align-items: center;margin-top: 20px;">
@@ -35,6 +42,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 const _value = ref(null);
 const _valueGPU = ref(null);
 const _path = ref("");
+const _browser = ref("0");
 
 let _IsSwitchChange = false;
 let _resourcesPath = "";
@@ -78,7 +86,7 @@ function switchChange_GPU(bool) {
 
 function OpenWebServerPort() {
     if (_IsSwitchChange) {
-        Api.System.OpenWebServerPort();
+        Api.System.OpenWebServerPort(_browser.value);
     }
 }
 

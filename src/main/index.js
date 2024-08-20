@@ -7,6 +7,7 @@ import WindowManage from "./service/window/index";
 import { MonitorFile } from "./service/resourceWin/webFile";
 import { WebServer } from '@main/service/webServer/index.js';
 import Core from '@main/service/core/index.js'
+import { OpenHideParameter_Key } from '@main/utils/config';
 
 //全局变量
 let MainWindow = null;
@@ -99,8 +100,16 @@ function createWindow() {
   //等待渲染进程加载完成显示窗口
   MainWindow.on("ready-to-show", () => {
     //获取是否开机启动
-    const { openAtLogin } = app.getLoginItemSettings();
-    if (!openAtLogin) {
+    const { wasOpenedAtLogin } = app.getLoginItemSettings();
+    if (process.platform == "win32") {
+      if (process.argv.indexOf(OpenHideParameter_Key) < 0) {
+        MainWindow.show();
+      }
+    } else if (process.platform == "darwin") {
+      if (!wasOpenedAtLogin) {
+        MainWindow.show();
+      }
+    } else {
       MainWindow.show();
     }
   });

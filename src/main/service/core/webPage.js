@@ -22,7 +22,8 @@ function initialization() {
 }
 
 async function InsertWebPage(params) {
-    let result = await db.run(`INSERT INTO WebPage VALUES (NULL,NULL,?, ?, ?,datetime('now', 'localtime'),NULL)`, [params.uuid, params.title, params.contentText]);
+    // 插入数据
+    let result = await db.run(`INSERT INTO WebPage VALUES (NULL,NULL,?, ?, ?, ?,'mhtml',datetime('now', 'localtime'),datetime('now', 'localtime'))`, [params.uuid, params.title, params.contentText,params.Url]);
     return result;
 }
 

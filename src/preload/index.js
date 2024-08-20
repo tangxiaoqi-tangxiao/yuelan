@@ -35,8 +35,8 @@ const Api = {
     BootStart: (data) => ipcRenderer.invoke('index:System:BootStart', data),
     GetBootStart: () => ipcRenderer.invoke('index:System:GetBootStart'),
     GetGPU: () => ipcRenderer.invoke('index:System:GetGPU'),
-    SaveGPU: (data) => ipcRenderer.invoke('index:System:SaveGPU',data),
-    OpenWebServerPort: () => ipcRenderer.invoke('index:System:OpenWebServerPort'),
+    SaveGPU: (data) => ipcRenderer.invoke('index:System:SaveGPU', data),
+    OpenWebServerPort: (data) => ipcRenderer.invoke('index:System:OpenWebServerPort', data),
   },
   DB: {
     GetWebPageList: (data) => ipcRenderer.invoke('index:DB:GetWebPageList', data),
@@ -55,6 +55,7 @@ const Api = {
     exportWebPageList: (id) => ipcRenderer.invoke("index:RightClickMenu:exportWebPageList", id),
     InsertFavorites: (data) => ipcRenderer.invoke("index:RightClickMenu:InsertFavorites", data),
     exportHtml: (data) => ipcRenderer.invoke("index:RightClickMenu:exportHtml", data),
+    openWebPageUrl: (data) => ipcRenderer.invoke("index:RightClickMenu:openWebPageUrl", data),
   }
 };
 

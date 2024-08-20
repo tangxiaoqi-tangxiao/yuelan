@@ -1,13 +1,16 @@
-import { ipcMain, app ,shell } from "electron";
+import { ipcMain, app, shell } from "electron";
 import db from '@main/utils/sqliteHelper';
 import { UUID } from '@main/utils/globalVariable';
+import open, { apps } from 'open';
+import { BootStart_Key, GPU_Key, WebServerPort_Key, OpenHideParameter_Key } from '@main/utils/config';
+
 
 function initialization() {
     ipcMain.handle('index:System:BootStart', async (event, data) => BootStart(data));
     ipcMain.handle('index:System:GetBootStart', async (event) => GetBootStart());
     ipcMain.handle('index:System:GetGPU', async (event) => GetGPU());
     ipcMain.handle('index:System:SaveGPU', async (event, data) => SaveGPU(data));
-    ipcMain.handle('index:System:OpenWebServerPort', async (event) => await OpenWebServerPort());
+    ipcMain.handle('index:System:OpenWebServerPort', async (event, data) => await OpenWebServerPort(data));
 }
 
 async function SaveWindowSize(params) {
@@ -30,20 +33,20 @@ function BootStart(bool) {
         openAtLogin: bool, // Boolean 在登录时启动应用
         openAsHidden: true, // Boolean (可选) mac 表示以隐藏的方式启动应用。~~~~
         path: ex, //String (可选) Windows - 在登录时启动的可执行文件。默认为 process.execPath.
-        // args: [] String Windows - 要传递给可执行文件的命令行参数。默认为空数组。注意用引号将路径换行。
+        args: [OpenHideParameter_Key]//String Windows - 要传递给可执行文件的命令行参数。默认为空数组。注意用引号将路径换行。
     });
     //更新是否自启动
     SaveBootStart(bool);
 }
 
 async function GetBootStart() {
-    const key = "BootStart";
+    const key = BootStart_Key;
     let model = await db.get(`SELECT * FROM "Window" WHERE "Key"=?`, [key]);
     return model;
 }
 
 async function SaveBootStart(bool) {
-    const key = "BootStart";
+    const key = BootStart_Key;
     let result = await GetBootStart();
     if (result) {
         db.run(`UPDATE "Window" SET "Value" = ? WHERE "KEY"=?`, [bool, key]);
@@ -53,13 +56,13 @@ async function SaveBootStart(bool) {
 }
 
 async function GetGPU() {
-    const key = "GPU";
+    const key = GPU_Key;
     let model = await db.get(`SELECT * FROM "Window" WHERE "Key"=?`, [key]);
     return model;
 }
 
 async function SaveGPU(bool) {
-    const key = "GPU";
+    const key = GPU_Key;
     let result = await GetGPU();
     if (result) {
         db.run(`UPDATE "Window" SET "Value" = ? WHERE "KEY"=?`, [bool, key]);
@@ -69,13 +72,13 @@ async function SaveGPU(bool) {
 }
 
 async function GetWebServerPort() {
-    const key = "WebServerPort";
+    const key = WebServerPort_Key;
     let model = await db.get(`SELECT * FROM "Window" WHERE "Key"=?`, [key]);
     return model;
 }
 
 async function SaveWebServerPort(Port) {
-    const key = "WebServerPort";
+    const key = WebServerPort_Key;
     let result = await GetWebServerPort();
     if (result) {
         db.run(`UPDATE "Window" SET "Value" = ? WHERE "KEY"=?`, [Port, key]);
@@ -84,9 +87,25 @@ async function SaveWebServerPort(Port) {
     }
 }
 
-async function OpenWebServerPort() {
+async function OpenWebServerPort(data) {
+    let browser = null;
+    switch (data) {
+        case "1":
+            browser = apps.edge;
+            break;
+        case "2":
+            browser = apps.chrome;
+            break;
+        default:
+            browser = apps.browser;
+            break;
+    }
     let model = await GetWebServerPort();
-    shell.openExternal(`http://localhost:${model.Value}?uuid=${UUID}`);
+    open(`http://localhost:${model.Value}?uuid=${UUID}`, { app: { name: browser } }).then(() => {
+        console.log('打开成功');
+    }).catch((err) => {
+        console.log(err);
+    });
 }
 
 function WindowMessage(event, data) {
@@ -95,4 +114,4 @@ function WindowMessage(event, data) {
     }
 }
 
-export { initialization, SaveWindowSize, GetWindowSize, GetBootStart, SaveBootStart, GetGPU,SaveWebServerPort,GetWebServerPort, WindowMessage };
+export { initialization, SaveWindowSize, GetWindowSize, GetBootStart, SaveBootStart, GetGPU, SaveWebServerPort, GetWebServerPort, WindowMessage };

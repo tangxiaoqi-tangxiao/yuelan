@@ -90,27 +90,27 @@ async function WindowManage(MainWindow) {
   }
 
   //开机自启动
-  {
-    if (app.isPackaged) {
-      let BootStart = await GetBootStart();
-      const ex = process.execPath;
-      if (BootStart) {
-        let bool = false;
-        if (BootStart.Value == "1") {
-          bool = true;
-        }
-        app.setLoginItemSettings({
-          openAtLogin: bool, // Boolean 在登录时启动应用
-          openAsHidden: true, // Boolean (可选) mac 表示以隐藏的方式启动应用。~~~~
-          path: ex, //String (可选) Windows - 在登录时启动的可执行文件。默认为 process.execPath.
-          // args: [] String Windows - 要传递给可执行文件的命令行参数。默认为空数组。注意用引号将路径换行。
-        });
-      } else {
-        SaveBootStart(false);
-      }
-      logger.info("开机自启动:" + ex);
-    }
-  }
+  // {
+  //   if (app.isPackaged) {
+  //     let BootStart = await GetBootStart();
+  //     const ex = process.execPath;
+  //     if (BootStart) {
+  //       let bool = false;
+  //       if (BootStart.Value == "1") {
+  //         bool = true;
+  //       }
+  //       app.setLoginItemSettings({
+  //         openAtLogin: bool, // Boolean 在登录时启动应用
+  //         openAsHidden: true, // Boolean (可选) mac 表示以隐藏的方式启动应用。~~~~
+  //         path: ex, //String (可选) Windows - 在登录时启动的可执行文件。默认为 process.execPath.
+  //         args: ["--OpenHide"] //String Windows - 要传递给可执行文件的命令行参数。默认为空数组。注意用引号将路径换行。
+  //       });
+  //     } else {
+  //       SaveBootStart(false);
+  //     }
+  //     logger.info("开机自启动:" + ex);
+  //   }
+  // }
 }
 
 export default WindowManage;

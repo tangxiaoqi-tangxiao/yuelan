@@ -11,7 +11,7 @@
             <div id="content" ref="_content">
                 <template v-for="item in _dataArr">
                     <el-card shadow="hover" @contextmenu.prevent="showMenu($event, item)"
-                        style="max-width: 310px;cursor:pointer;user-select: none;" class="card"
+                        style="max-width: 400px;min-width: 250px;cursor:pointer;user-select: none;" class="card"
                         @click="ClickOpenWebPage($event, item)">
                         <el-text line-clamp="2" size="large" style="font-weight: bold;">{{ item.title }}</el-text><br>
                         <el-text line-clamp="3" size="small" style="color:rgb(130, 130, 130);width: 100%;">{{
@@ -67,7 +67,7 @@ const _menuVisible = ref(false);
 const _menuX = ref(0);
 const _menuY = ref(0);
 const _menuOptions = ref([
-    { label: '使用浏览器打开', value: '1' },
+    { label: '打开原网页', value: '1' },
     { label: '导出', value: '2' },
     { label: '导出为 HTML 网页', value: '6' },
     { label: '移动', value: '5' },
@@ -156,10 +156,10 @@ const showMenu = function (event, data) {
 //触发菜单事件
 const handleMenuSelect = (optionValue) => {
     if (optionValue == "1") {
-        Api.RightClickMenu.OpenWebPage(_WebPage.uuid).then(result => {
+        Api.RightClickMenu.openWebPageUrl(_WebPage.id).then(result => {
             if (result.code == 0) {
                 ElMessage({
-                    message: '浏览器打开网页成功',
+                    message: '打开原网页成功',
                     type: 'success',
                 });
             } else {
@@ -278,11 +278,11 @@ const handleClickOutside = (bool) => {
 //监听窗口缩放
 function handleResize(length) {
     let cardLength = length && typeof length == 'number' ? length : document.querySelectorAll('.card').length;
-    if (cardLength <= 0) {
+    if (cardLength <= 0 || !_content.value) {
         return;
     }
     let container = _container.value.clientWidth;
-    let cardWidth = (cardLength * 300) - 15;
+    let cardWidth = (cardLength * 365) + ((cardLength - 1) * 20);
     if (container - 40 > cardWidth) {
         _content.value.style.width = `${cardWidth}px`;
     } else {
@@ -388,9 +388,10 @@ function closeDialog(bool, model) {
 }
 
 Api.WebContents.MonitorNewWebPage((data) => {
-    if (query.Favorites_Id == 0) {
+    let model = GetData(data);
+    if (query.Favorites_Id == model.favorites_Id || query.Favorites_Id == (model.favorites_Id | 0)) {
         _nullImage.value = true;
-        _dataArr.value.unshift(GetData(data));
+        _dataArr.value.unshift(model);
     }
 });
 
@@ -405,7 +406,7 @@ function initializeFilePath(FilePath) {
 #content {
     margin: 0 20px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
 }
 
