@@ -35,4 +35,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: 阅览 # 你可以命名为任意名字
-          path: D:\a\yeulan\yeulan\dist # 将这个路径替换为打包后文件所在的路径
+          path: .\dist # 将这个路径替换为打包后文件所在的路径
