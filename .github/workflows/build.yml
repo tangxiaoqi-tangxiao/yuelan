@@ -7,7 +7,7 @@ on:
       - main
 
 jobs:
-  dev-env:
+  Win:
     name: Win打包
     runs-on: windows-latest
 
@@ -36,3 +36,34 @@ jobs:
         with:
           name: 阅览 # 你可以命名为任意名字
           path: .\dist # 将这个路径替换为打包后文件所在的路径
+
+  Mac:
+    name: Mac打包
+    runs-on: macos-latest # 使用 macOS 运行环境
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "v20.16.0"
+
+      - name: 安装依赖
+        run: npm install
+
+      - name: 打包阅览
+        run: npm run build:mac # 假设你有一个专门为 macOS 打包的 npm 脚本
+
+      - name: 查看打包后的文件结构
+        run: |
+          echo "打包后的文件结构如下:"
+          ls -R ./dist
+        # 使用 ls 命令递归列出 dist 目录中的所有文件
+
+      - name: 上传打包后的文件
+        uses: actions/upload-artifact@v3
+        with:
+          name: 阅览 # 你可以命名为任意名字
+          path: ./dist # 将这个路径替换为打包后文件所在的路径
