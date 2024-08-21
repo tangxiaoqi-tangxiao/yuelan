@@ -25,3 +25,14 @@ jobs:
 
       - name: 打包阅览
         run: npm run build:win # 假设你有一个名为 build 的 npm 脚本
+
+      - name: 查看打包后的文件结构
+        run: |
+          echo "打包后的文件结构如下:"
+          dir dist /s /b  # Windows 命令列出 dist 目录下所有文件和文件夹
+
+      - name: 上传打包后的文件
+        uses: actions/upload-artifact@v3
+        with:
+          name: 打包后的文件 # 你可以命名为任意名字
+          path: path/to/build # 将这个路径替换为打包后文件所在的路径
