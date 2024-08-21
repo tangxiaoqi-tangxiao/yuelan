@@ -30,6 +30,11 @@
                     <span>文件保存路径</span>
                     <el-input v-model="_path" style="margin-left: auto;width: 50%;" @input="reset" />
                 </div>
+
+                <div style="display: flex;align-items: center;margin-top: 20px;">
+                    <span>日志保存路径</span>
+                    <el-input v-model="_path" style="margin-left: auto;width: 50%;" @input="reset" />
+                </div>
             </div>
         </div>
     </div>
