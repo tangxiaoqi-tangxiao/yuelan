@@ -4,7 +4,7 @@ on:
   # 仅在 master 分支发生 push 或 pull request 时触发工作流
   push:
     branches:
-      - master
+      - main
 
 jobs:
   dev-env:
