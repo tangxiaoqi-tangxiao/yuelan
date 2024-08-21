@@ -1,8 +1,7 @@
 name: yuelan
 
 on:
-  # Trigger the workflow on push or pull request,
-  # but only for the master branch
+  # 仅在 master 分支发生 push 或 pull request 时触发工作流
   push:
     branches:
       - master
@@ -11,13 +10,18 @@ jobs:
   dev-env:
     name: dev-env
     runs-on: windows-latest
+
     steps:
-      - name: 打包阅览
+      - name: 检出代码
+        uses: actions/checkout@v4
 
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: "v20.16.0"
 
-      - run: npm install
+      - name: 安装依赖
+        run: npm install
+
+      - name: 打包阅览
+        run: npm run build:win # 假设你有一个名为 build 的 npm 脚本
