@@ -4,6 +4,6 @@ out
 .DS_Store
 *.log*
 /logs/*
-resources/data/yuelan.db3
-resources/WebPageData/*
-resources/Node/*
+# resources/data/yuelan.db3
+# resources/WebPageData/*
+# resources/Node/*
