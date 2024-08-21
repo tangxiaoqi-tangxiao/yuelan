@@ -34,7 +34,7 @@ jobs:
       - name: 上传打包后的文件
         uses: actions/upload-artifact@v3
         with:
-          name: 阅览 # 你可以命名为任意名字
+          name: Win阅览 # 你可以命名为任意名字
           path: .\dist # 将这个路径替换为打包后文件所在的路径
 
   Mac:
@@ -65,5 +65,5 @@ jobs:
       - name: 上传打包后的文件
         uses: actions/upload-artifact@v3
         with:
-          name: 阅览 # 你可以命名为任意名字
+          name: Mac阅览 # 你可以命名为任意名字
           path: ./dist # 将这个路径替换为打包后文件所在的路径
