@@ -8,7 +8,7 @@ on:
 
 jobs:
   dev-env:
-    name: dev-env
+    name: Mac打包
     runs-on: macos-latest  # 使用 macOS 运行环境
 
     steps:
