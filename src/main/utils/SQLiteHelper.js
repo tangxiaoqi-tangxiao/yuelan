@@ -1,57 +1,47 @@
-import sqlite3 from 'sqlite3';
-import {yuelan_db3_Path} from './globalVariable'
-
-const sqlite = sqlite3.verbose();
+import Database from 'better-sqlite3';
+import { yuelan_db3_Path } from './globalVariable';
 
 class SQLiteHelper {
     constructor(dbFilePath) {
-        this.db = new sqlite.Database(dbFilePath, (err) => {
-            if (err) {
-                console.error('Error opening database:', err.message);
-            } else {
-                console.log('Connected to the SQLite database.');
-            }
-        });
+        try {
+            this.db = new Database(dbFilePath);
+            console.log('Connected to the SQLite database.');
+        } catch (err) {
+            console.error('Error opening database:', err.message);
+        }
     }
 
     run(sql, params = []) {
-        return new Promise((resolve, reject) => {
-            this.db.run(sql, params, function (err) {
-                if (err) {
-                    console.error('Error running SQL:', err.message);
-                    reject(err);
-                } else {
-                    resolve({ id: this.lastID, changes: this.changes });
-                }
-            });
-        });
+        try {
+            const stmt = this.db.prepare(sql);
+            const info = stmt.run(...params);
+            return Promise.resolve({ id: info.lastInsertRowid, changes: info.changes });
+        } catch (err) {
+            console.error('Error running SQL:', err.message);
+            return Promise.reject(err);
+        }
     }
 
     get(sql, params = []) {
-        return new Promise((resolve, reject) => {
-            this.db.get(sql, params, (err, row) => {
-                if (err) {
-                    console.error('Error fetching data:', err.message);
-                    reject(err);
-                } else {
-                    resolve(row);
-                }
-            });
-        });
+        try {
+            const stmt = this.db.prepare(sql);
+            const row = stmt.get(...params);
+            return Promise.resolve(row);
+        } catch (err) {
+            console.error('Error fetching data:', err.message);
+            return Promise.reject(err);
+        }
     }
 
     all(sql, params = []) {
-        return new Promise((resolve, reject) => {
-            this.db.all(sql, params, (err, rows) => {
-                console.log(sql,params)
-                if (err) {
-                    console.error('Error fetching data:', err.message);
-                    reject(err);
-                } else {
-                    resolve(rows);
-                }
-            });
-        });
+        try {
+            const stmt = this.db.prepare(sql);
+            const rows = stmt.all(...params);
+            return Promise.resolve(rows);
+        } catch (err) {
+            console.error('Error fetching data:', err.message);
+            return Promise.reject(err);
+        }
     }
 
     // 分页查询函数
@@ -62,17 +52,14 @@ class SQLiteHelper {
     }
 
     close() {
-        return new Promise((resolve, reject) => {
-            this.db.close((err) => {
-                if (err) {
-                    console.error('Error closing database:', err.message);
-                    reject(err);
-                } else {
-                    console.log('Closed the database connection.');
-                    resolve();
-                }
-            });
-        });
+        try {
+            this.db.close();
+            console.log('Closed the database connection.');
+            return Promise.resolve();
+        } catch (err) {
+            console.error('Error closing database:', err.message);
+            return Promise.reject(err);
+        }
     }
 }
 
