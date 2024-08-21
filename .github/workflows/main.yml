@@ -1,0 +1,23 @@
+name: yuelan
+
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the master branch
+  push:
+    branches:
+      - master
+
+jobs:
+  dev-env:
+    name: dev-env
+    runs-on: windows-latest
+    steps:
+      - name: 打包阅览
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "v20.16.0"
+
+      - run: npm install

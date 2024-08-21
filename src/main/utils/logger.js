@@ -1,4 +1,5 @@
 import winston from 'winston';
+import DailyRotateFile from 'winston-daily-rotate-file';
 
 const logger = winston.createLogger({
   level: 'info',
@@ -9,8 +10,19 @@ const logger = winston.createLogger({
     winston.format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
   ),
   transports: [
-    new winston.transports.File({ filename: 'error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'combined.log' })
+    new DailyRotateFile({
+      dirname: './logs',
+      filename: 'error-%DATE%.log',
+      datePattern: 'YYYY-MM-DD',
+      level: 'error',
+      maxFiles: '14d'  // 保留最近14天的日志
+    }),
+    new DailyRotateFile({
+      dirname: './logs',
+      filename: 'info-%DATE%.log',
+      datePattern: 'YYYY-MM-DD',
+      maxFiles: '14d'  // 保留最近14天的日志
+    })
   ]
 });
 
