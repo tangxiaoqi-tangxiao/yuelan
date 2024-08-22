@@ -2,6 +2,8 @@ import { ipcMain, app, Tray, Menu } from "electron";
 import path from 'path';
 import { SaveWindowSize, GetWindowSize, GetBootStart, SaveBootStart } from '@main/service/core/System';
 import logger from '@main/utils/logger';
+import { autoUpdateApp } from '@main/service/window/autoUpdate';
+
 
 const WM_INITMENU = 0x0116;
 
@@ -111,6 +113,12 @@ async function WindowManage(MainWindow) {
   //     logger.info("开机自启动:" + ex);
   //   }
   // }
+
+  //检查更新
+  {
+    // 检查更新
+    autoUpdateApp();
+  }
 }
 
 export default WindowManage;

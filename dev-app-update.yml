@@ -1,3 +1,8 @@
-provider: generic
-url: https://example.com/auto-updates
-updaterCacheDirName: yuelan-updater
+# provider: generic
+# url: https://example.com/auto-updates
+# updaterCacheDirName: yuelan-updater
+
+  provider: github
+  owner: tangxiaoqi-tangxiao
+  repo: read
+  private: false
