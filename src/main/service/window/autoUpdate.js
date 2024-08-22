@@ -26,7 +26,7 @@ export async function autoUpdateApp(MainWindow) {
     });
     // 下载更新包的进度，可以用于显示下载进度与前端交互等
     autoUpdater.on("download-progress", async (progress) => {
-        logger.info(`总进度${progress.total},下载进度： ${progress.percent}`);
+        logger.info(`总字节数：${progress.total} 目前为止已经下载的字节数：${progress.transferred} 下载进度： ${progress.percent}`);
     });
     // 在更新下载完成的时候触发。
     autoUpdater.on("update-downloaded", (res) => {
