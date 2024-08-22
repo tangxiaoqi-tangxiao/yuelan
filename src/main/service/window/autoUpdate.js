@@ -2,7 +2,7 @@ import { autoUpdater } from 'electron-updater';
 import { dialog } from 'electron';
 import logger from '@main/utils/logger.js';
 
-export async function autoUpdateApp() {
+export async function autoUpdateApp(MainWindow) {
     // 每次启动自动更新检查更新版本
     autoUpdater.checkForUpdates();
     // autoUpdater.logger = logger;
@@ -33,7 +33,7 @@ export async function autoUpdateApp() {
         logger.info("下载完毕, 提示安装更新", res);
         // 这里需要注意，Electron.dialog 想要使用，必须在 BrowserWindow 创建之后
         dialog
-            .showMessageBox({
+            .showMessageBox(MainWindow,{
                 title: "更新应用",
                 message: "已为您下载最新应用，点击确定马上替换为最新版本！",
             })

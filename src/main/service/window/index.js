@@ -117,7 +117,7 @@ async function WindowManage(MainWindow) {
   //检查更新
   {
     // 检查更新
-    autoUpdateApp();
+    autoUpdateApp(MainWindow);
   }
 }
 
