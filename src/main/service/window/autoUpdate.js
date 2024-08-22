@@ -4,10 +4,6 @@ import logger from '@main/utils/logger.js';
 
 export async function autoUpdateApp() {
 
-    // autoUpdater.checkForUpdatesAndNotify({
-    //     updateConfigPath: './dev-app-update.yml'
-    // });
-
     // 每次启动自动更新检查更新版本
     autoUpdater.checkForUpdates();
     // autoUpdater.logger = logger;
