@@ -3,7 +3,6 @@ import { dialog } from 'electron';
 import logger from '@main/utils/logger.js';
 
 export async function autoUpdateApp() {
-
     // 每次启动自动更新检查更新版本
     autoUpdater.checkForUpdates();
     // autoUpdater.logger = logger;
@@ -27,7 +26,7 @@ export async function autoUpdateApp() {
     });
     // 下载更新包的进度，可以用于显示下载进度与前端交互等
     autoUpdater.on("download-progress", async (progress) => {
-        logger.info(progress);
+        logger.info(`总进度${progress.total},下载进度： ${progress.percent}`);
     });
     // 在更新下载完成的时候触发。
     autoUpdater.on("update-downloaded", (res) => {

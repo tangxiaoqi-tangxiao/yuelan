@@ -41,11 +41,15 @@ linux:
 appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
-# publish:
-#   provider: generic
-#   url: https://example.com/auto-updates
+
+# 通用
 publish:
-  provider: github
-  owner: tangxiaoqi-tangxiao
-  repo: read
-  private: false
+  provider: generic
+  url: https://gitee.com/tang-xiaoqi/read/releases/download/v1.0.0/
+
+# Github 更新
+# publish:
+#   provider: github
+#   owner: tangxiaoqi-tangxiao
+#   repo: read
+#   private: false
