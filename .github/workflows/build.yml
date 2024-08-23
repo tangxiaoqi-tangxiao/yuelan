@@ -36,6 +36,7 @@ jobs:
         with:
           name: Win阅览 # 你可以命名为任意名字
           path: .\dist # 将这个路径替换为打包后文件所在的路径
+          retention-days: 1
 
   Mac:
     name: Mac打包
@@ -67,3 +68,4 @@ jobs:
         with:
           name: Mac阅览 # 你可以命名为任意名字
           path: ./dist # 将这个路径替换为打包后文件所在的路径
+          retention-days: 1

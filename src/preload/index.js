@@ -37,6 +37,11 @@ const Api = {
     GetGPU: () => ipcRenderer.invoke('index:System:GetGPU'),
     SaveGPU: (data) => ipcRenderer.invoke('index:System:SaveGPU', data),
     OpenWebServerPort: (data) => ipcRenderer.invoke('index:System:OpenWebServerPort', data),
+    OpenLogs: () => ipcRenderer.invoke('index:System:OpenLogs'),
+  },
+  AboutHow:{
+    GetVersion: () => ipcRenderer.invoke('index:AboutHow:GetVersion'),
+    GetCheckUpdates: () => ipcRenderer.invoke('index:AboutHow:GetCheckUpdates'),
   },
   DB: {
     GetWebPageList: (data) => ipcRenderer.invoke('index:DB:GetWebPageList', data),

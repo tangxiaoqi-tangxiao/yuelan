@@ -3,6 +3,10 @@ import db from '@main/utils/sqliteHelper';
 import { UUID } from '@main/utils/globalVariable';
 import open, { apps } from 'open';
 import { BootStart_Key, GPU_Key, WebServerPort_Key, OpenHideParameter_Key } from '@main/utils/config';
+import fse from 'fs-extra';
+import { RootDirectory } from '@main/utils/globalVariable.js';
+import logger from '@main/utils/logger.js';
+import path from 'path';
 
 
 function initialization() {
@@ -11,6 +15,7 @@ function initialization() {
     ipcMain.handle('index:System:GetGPU', async (event) => GetGPU());
     ipcMain.handle('index:System:SaveGPU', async (event, data) => SaveGPU(data));
     ipcMain.handle('index:System:OpenWebServerPort', async (event, data) => await OpenWebServerPort(data));
+    ipcMain.handle('index:System:OpenLogs', (event) => OpenLogs());
 }
 
 async function SaveWindowSize(params) {
@@ -106,6 +111,28 @@ async function OpenWebServerPort(data) {
     }).catch((err) => {
         console.log(err);
     });
+}
+
+function OpenLogs() {
+    let logspath = path.join(RootDirectory, "logs");
+
+    logger.info(`打开日志文件地址：${logspath}`);
+
+    const exists = fse.pathExistsSync(logspath);
+    if (exists) {
+        shell.openPath(logspath);
+        return {
+            code: 0,
+            data: null,
+            message: ""
+        };
+    } else {
+        return {
+            code: 1,
+            data: null,
+            message: "当前没有日志文件"
+        };
+    }
 }
 
 function WindowMessage(event, data) {

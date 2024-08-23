@@ -17,7 +17,8 @@
                 <div style="display: flex;align-items: center;margin-top: 20px;">
                     <span>连接浏览器插件<span style="color: #8f95a2;font-size: 14px;">(用于和浏览器插件通信)</span></span>
                     <div style="margin-left: auto;">
-                        <el-select v-model="_browser" placeholder="Select" size="small" style="width: 100px;margin-right: 20px;">
+                        <el-select v-model="_browser" placeholder="Select" size="small"
+                            style="width: 100px;margin-right: 20px;">
                             <el-option label="默认浏览器" value="0" />
                             <el-option label="edge" value="1" />
                             <el-option label="chrome" value="2" />
@@ -32,8 +33,8 @@
                 </div>
 
                 <div style="display: flex;align-items: center;margin-top: 20px;">
-                    <span>日志保存路径</span>
-                    <el-input v-model="_path" style="margin-left: auto;width: 50%;" @input="reset" />
+                    <span>日志</span>
+                    <el-button style="margin-left: auto;" @click="OpenLogs">打开日志</el-button>
                 </div>
             </div>
         </div>
@@ -93,6 +94,17 @@ function OpenWebServerPort() {
     if (_IsSwitchChange) {
         Api.System.OpenWebServerPort(_browser.value);
     }
+}
+
+function OpenLogs() {
+    Api.System.OpenLogs().then((data) => {
+        if (data.code != 0) {
+            ElMessage({
+                type: 'error',
+                message: data.message,
+            });
+        }
+    });
 }
 
 function reset() {

@@ -11,6 +11,7 @@ const originalResourcesPath = path.join(__dirname.replace("app.asar", "app.asar.
 const resourcesPath = path.join(userDataPath, resourcesStr);
 const WebPageDataPath = path.join(resourcesPath, 'WebPageData');
 const yuelan_db3_Path = path.join(resourcesPath, "Data", dbStr);
+const RootDirectory = path.dirname(app.getPath('exe'));
 
 //定义全局静态变量
 const UUID = "c419c0ed-55de-467d-9a5e-07bebf592e6c";
@@ -18,12 +19,13 @@ const UUID = "c419c0ed-55de-467d-9a5e-07bebf592e6c";
 // 检查数据库文件是否存在，如果不存在则从指定位置复制
 CheckTheData();
 
-export { 
-    originalResourcesPath, 
-    resourcesPath, 
-    WebPageDataPath, 
-    yuelan_db3_Path, 
+export {
+    originalResourcesPath,
+    resourcesPath,
+    WebPageDataPath,
+    yuelan_db3_Path,
     UUID,
+    RootDirectory
 };
 
 ipcMain.handle("index:globalVariable:WebPageDataPath", () => WebPageDataPath);

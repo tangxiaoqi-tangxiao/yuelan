@@ -1,17 +1,17 @@
 * {
   margin: 0;
   padding: 0;
+
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE/Edge */
+  user-select: none;         /* 标准语法 */
 }
 
 img {
-  -webkit-user-select: none; /* Safari */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* IE/Edge */
-  user-select: none; /* 标准语法 */
-}
-
-p, span, div {
-  user-select: none;
-  -webkit-user-drag: none;
+  -webkit-user-drag: none; /* 禁止在 WebKit 内核的浏览器中拖动图片 */
+  -khtml-user-drag: none;  /* 禁止在 Konqueror 浏览器中拖动图片 */
+  -moz-user-drag: none;    /* 禁止在 Firefox 浏览器中拖动图片 */
+  -o-user-drag: none;
   user-drag: none;
 }

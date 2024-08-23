@@ -55,7 +55,7 @@
                             </el-icon>
                             <span>设置</span>
                         </el-menu-item>
-                        <el-menu-item @click="toggleSetUp" class="background-menu" aria-selected="true" index="2">
+                        <el-menu-item @click="toggleAboutHow" class="background-menu" aria-selected="true" index="2">
                             <el-icon>
                                 <el-icon>
                                     <InfoFilled />
@@ -288,6 +288,12 @@ function FavoritesSelect(index) {
 function toggleSetUp() {
     _router.push({ name: 'setUp' }).then(() => {
         SetindexKey(3);
+    });
+}
+
+function toggleAboutHow() {
+    _router.push({ name: 'aboutHow' }).then(() => {
+        SetindexKey(4);
     });
 }
 

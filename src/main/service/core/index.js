@@ -2,6 +2,8 @@ import { initialization as initializationWebPage, GetWebPageList } from './webPa
 import { initialization as initializationFavorites } from './favorites';
 import { initialization as initializationRightClickMenu } from './rightClickMenu';
 import { initialization as initializationWindow } from './System';
+import { initialization as initializationAboutHow } from './aboutHow';
+
 
 
 function initialization() {
@@ -13,6 +15,8 @@ function initialization() {
     initializationRightClickMenu();
     //系统和窗口操作初始化
     initializationWindow();
+    //关于
+    initializationAboutHow();
 }
 
 
