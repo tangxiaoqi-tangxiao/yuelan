@@ -31,6 +31,7 @@ function OpenBrowser() {
 }
 
 function GetCheckUpdates() {
+    _UpdateStr.value = "检查中...";
     Api.AboutHow.GetCheckUpdates().then(data => {
         if (data.code == 0) {
             if (data.data == true) {
@@ -38,6 +39,8 @@ function GetCheckUpdates() {
             } else {
                 _UpdateStr.value = "已经是最近版本";
             }
+        } else {
+            _UpdateStr.value = "检查更新";
         }
     });
 }

@@ -2,8 +2,10 @@ import { autoUpdater } from 'electron-updater';
 import { dialog } from 'electron';
 import logger from '@main/utils/logger.js';
 
+let IsCheckUpdates = false;
+
 export async function autoUpdateApp(MainWindow) {
-    return;
+    IsCheckUpdates = true;
     // 每次启动自动更新检查更新版本
     autoUpdater.checkForUpdates();
     // autoUpdater.logger = logger;
@@ -11,6 +13,7 @@ export async function autoUpdateApp(MainWindow) {
     // 这个写成 false，写成 true 时，可能会报没权限更新
     autoUpdater.autoDownload = false;
     autoUpdater.on("error", (error) => {
+        IsCheckUpdates = false;
         logger.error(["检查更新失败", error]);
     });
     // 当有可用更新的时候触发。 更新将自动下载。
@@ -23,6 +26,8 @@ export async function autoUpdateApp(MainWindow) {
     });
     // 当没有可用更新的时候触发，其实就是啥也不用做
     autoUpdater.on("update-not-available", () => {
+        IsCheckUpdates = false;
+
         logger.info("没有可用更新");
     });
     // 下载更新包的进度，可以用于显示下载进度与前端交互等
@@ -31,6 +36,7 @@ export async function autoUpdateApp(MainWindow) {
     });
     // 在更新下载完成的时候触发。
     autoUpdater.on("update-downloaded", (res) => {
+        IsCheckUpdates = false;
         logger.info("下载完毕, 提示安装更新", res);
         // 这里需要注意，Electron.dialog 想要使用，必须在 BrowserWindow 创建之后
         dialog
@@ -47,19 +53,34 @@ export async function autoUpdateApp(MainWindow) {
 }
 
 export async function CheckUpdates() {
-    // 禁止自动下载更新
-    autoUpdater.autoDownload = false;
-    autoUpdater.checkForUpdates()
-        .then((updateCheckResult) => {
-            logger.info("CheckUpdates检查更新成功");
-            if (updateCheckResult.updateInfo.version === null) {
-                return false;  // 如果没有更新，返回 false
-            } else {
-                return true;  // 如果有更新，返回 true
-            }
-        })
-        .catch((error) => {
-            logger.error(["CheckUpdates检查更新失败", error]);
-            return false;  // 检查更新失败时，返回 false
-        });
+    return new Promise((resolve) => {
+        logger.info(["开始检查更新：", IsCheckUpdates]);
+        if (IsCheckUpdates) {
+            resolve(true);
+        } else {
+            // 禁用自动下载
+            autoUpdater.autoDownload = false;
+
+            autoUpdater.on('update-available', () => {
+                logger.info('有可用的更新。');
+                // 在这里可以添加逻辑来通知用户或自动下载更新
+                resolve(true);
+            });
+
+            autoUpdater.on('update-not-available', () => {
+                logger.info('当前没有可用的更新。');
+                // 在这里可以添加逻辑来通知用户应用是最新的
+                resolve(false);
+            });
+
+            autoUpdater.on('error', (error) => {
+                logger.error(['检查更新时出错:', error]);
+                // 可以在这里处理错误，例如提示用户检查失败
+                resolve(false);
+            });
+
+            // 触发更新检查
+            autoUpdater.checkForUpdates();
+        }
+    });
 }
