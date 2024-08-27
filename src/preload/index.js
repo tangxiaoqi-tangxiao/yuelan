@@ -61,6 +61,9 @@ const Api = {
     InsertFavorites: (data) => ipcRenderer.invoke("index:RightClickMenu:InsertFavorites", data),
     exportHtml: (data) => ipcRenderer.invoke("index:RightClickMenu:exportHtml", data),
     openWebPageUrl: (data) => ipcRenderer.invoke("index:RightClickMenu:openWebPageUrl", data),
+    DelWebPageFavorites: (data) => ipcRenderer.invoke("index:RightClickMenu:DelWebPageFavorites", data),
+    DelFavorites: (data) => ipcRenderer.invoke("index:RightClickMenu:DelFavorites", data),
+    RenameTitleFavorites: (data) => ipcRenderer.invoke("index:RightClickMenu:RenameTitleFavorites", data),
   }
 };
 

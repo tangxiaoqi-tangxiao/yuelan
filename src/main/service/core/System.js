@@ -51,6 +51,7 @@ async function GetBootStart() {
 }
 
 async function SaveBootStart(bool) {
+    bool = bool ? "1" : "0";
     const key = BootStart_Key;
     let result = await GetBootStart();
     if (result) {

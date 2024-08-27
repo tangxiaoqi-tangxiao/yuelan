@@ -12,10 +12,6 @@
                             </el-icon>
                             <span>最近</span>
                         </el-menu-item>
-                        <!-- <el-menu-item index="2">
-                        <el-icon><Collection /></el-icon>
-                        <span>收藏夹</span>
-                    </el-menu-item> -->
                         <el-sub-menu index="2">
                             <template #title>
                                 <el-icon>
@@ -25,7 +21,7 @@
                             </template>
                             <template v-for="(item, index) in _FavoritesArr">
                                 <el-menu-item @contextmenu.prevent="showMenu($event, 3, item)"
-                                    @click="toggleFavorites(item.Id)" class="background-menu" :index="`1-${index + 1}`">
+                                    @click="toggleFavorites(item.Id)" class="background-menu" :index="`2-${index + 1}`">
                                     <el-icon>
                                         <Tickets />
                                     </el-icon>
@@ -169,10 +165,11 @@ const showMenu = function (event, index, data) {
                 break;
             case 3:
                 _menuOptions.value = [
-                    { label: '导出当前收藏夹', value: { index: 3, value: 1 } },
+                    { label: '导出收藏夹', value: { index: 3, value: 1 } },
                     { label: '', value: "" },
-                    { label: '清空收藏夹', value: { index: 3, value: 2 } },
-                    { label: '删除收藏夹', value: { index: 3, value: 2 } },
+                    { label: '重命名', value: { index: 3, value: 2 } },
+                    { label: '清空收藏夹', value: { index: 3, value: 3 } },
+                    { label: '删除收藏夹', value: { index: 3, value: 4 } },
                 ];
                 _menuVisible.value = true;
                 break;
@@ -234,7 +231,82 @@ const handleMenuSelect = (optionValue) => {
                         }
                     });
                     break;
+                case 2:
+                    ElMessageBox.prompt('收藏夹名称：', '', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                    })
+                        .then(({ value }) => {
+                            Api.RightClickMenu.RenameTitleFavorites({ Name: value, Id: _Favorites.Id }).then(result => {
+                                if (result.code == 0) {
+                                    // 同步更新数组元素(更新重命名后的收藏夹数组)
+                                    for (let i = _FavoritesArr.value.length - 1; i >= 0; i--) {
+                                        if (_FavoritesArr.value[i].Id == _Favorites.Id) {
+                                            _FavoritesArr.value[i].Name = value;
+                                        }
+                                    }
+                                    ElMessage({
+                                        message: '重命名收藏夹成功',
+                                        type: 'success',
+                                    });
+                                } else {
+                                    ElMessage.error("重命名收藏夹失败");
+                                }
+                            });
+                        }).catch(err => {
 
+                        });
+                    break;
+                case 3:
+                    ElMessageBox.confirm('操作会删除收藏夹中的所有网页', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                    })
+                        .then(({ value }) => {
+                            Api.RightClickMenu.DelWebPageFavorites(_Favorites.Id).then(result => {
+                                if (result.code == 0) {
+                                    FavoritesForceUpdate(_Favorites.Id);
+                                    ElMessage({
+                                        message: '清空收藏夹成功',
+                                        type: 'success',
+                                    });
+                                } else if (result.code != -1) {
+                                    ElMessage.error("清空收藏夹失败");
+                                }
+                            });
+                        }).catch(err => {
+
+                        });
+                    break;
+                case 4:
+                    ElMessageBox.confirm('操作会删除收藏夹，但不会删除收藏夹中的网页，', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                    })
+                        .then(({ value }) => {
+                            Api.RightClickMenu.DelFavorites(_Favorites.Id).then(result => {
+                                if (result.code == 0) {
+                                    Home();
+                                    //同步删除数组元素(更新删除后的收藏夹数组)
+                                    for (let i = _FavoritesArr.value.length - 1; i >= 0; i--) {
+                                        if (_FavoritesArr.value[i].Id == _Favorites.Id) {
+                                            _FavoritesArr.value.splice(i, 1);
+                                        }
+                                    }
+                                    ElMessage({
+                                        message: '删除收藏夹成功',
+                                        type: 'success',
+                                    });
+                                } else if (result.code != -1) {
+                                    ElMessage.error("删除收藏夹失败");
+                                }
+                            });
+                        }).catch(err => {
+
+                        });
+                    break;
                 default:
                     break;
             }
@@ -266,19 +338,33 @@ function Submit() {
 
 function Home() {
     _Favorites_Id = 0;
+    _Menu.value = "1";
     _input.value = "";
     _router.push({ name: 'content', query: { Favorites_Id: _Favorites_Id } }).then(() => {
         SetindexKey(0);
     });
 }
 
+//切换收藏夹
 function toggleFavorites(Favorites_Id) {
     _Favorites_Id = Favorites_Id;
+    _input.value = "";
     _router.push({ name: 'content', query: { Favorites_Id: _Favorites_Id } }).then(() => {
         SetindexKey("2_" + Favorites_Id);
     });
 }
 
+//强制更新收藏夹页面
+function FavoritesForceUpdate(Favorites_Id) {
+    _Favorites_Id = Favorites_Id;
+    _input.value = "";
+    let randomFloat = Math.random();
+    _router.push({ name: 'content', query: { Favorites_Id: _Favorites_Id } }).then(() => {
+        SetindexKey("2_" + Favorites_Id + "_" + randomFloat);
+    });
+}
+
+//选择菜单触发，更新收藏夹选择状态
 function FavoritesSelect(index) {
     _Menu.value = index;
     _setUp.value = "";
@@ -297,17 +383,20 @@ function toggleAboutHow() {
     });
 }
 
+//选择菜单触发，更新设置选择状态
 function SetUpSelect(index) {
     _setUp.value = index;
     _Menu.value = "";
     _SearchShow.value = false;
 }
+
 //获取收藏夹
 function GetFavoritesList() {
     Api.DB.GetFavoritesList(1).then(datas => {
         _FavoritesArr.value = datas;
     });
 }
+
 //监听收藏夹更新
 Api.WebContents.MonitorFavorites((data) => {
     GetFavoritesList();

@@ -5,6 +5,7 @@ import db from '@main/utils/sqliteHelper';
 function initialization() {
     ipcMain.handle('index:DB:GetFavoritesList', async (event, data) => GetFavoritesList(data));
 }
+
 async function GetFavoritesList(data) {
     let row = null;
 
@@ -21,10 +22,34 @@ async function GetFavoritesList(data) {
     // 发送响应回渲染进程
     return row;
 }
+
 //创建收藏夹
 async function InsertFavorites(data) {
     let result = await db.run(`INSERT INTO Favorites VALUES(NULL,?,datetime('now', 'localtime'))`, [data]);
     return result;
 }
 
-export { initialization, GetFavoritesList,InsertFavorites }
+//删除收藏夹
+async function DelFavorites(data) {
+    let result = await db.run(`DELETE FROM Favorites WHERE Id=?`, [data]);
+    if (result.changes > 0) {
+        //将WebPage收藏夹id置为null
+        let result = await db.run(`UPDATE WebPage SET Favorites_Id = NULL WHERE Id=?`, [data]);
+        if (result.changes >= 0) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+
+    }
+}
+
+//重命名
+async function RenameTitleFavorites(data) {
+    let result = await db.run(`UPDATE Favorites SET Name=? WHERE Id=?`, [data.Name, data.Id]);
+    return result;
+}
+
+export { initialization, GetFavoritesList, InsertFavorites, DelFavorites,RenameTitleFavorites }

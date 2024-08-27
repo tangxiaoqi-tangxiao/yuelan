@@ -150,9 +150,9 @@ async function Classification(WebPage_Id, Favorites_Id) {
 
 
 //删除指定收藏夹的网页数据
-// async function Classification(WebPage_Id, Favorites_Id) {
-//     let sql = `UPDATE WebPage SET Favorites_Id=?,UpdateDate=datetime('now', 'localtime') WHERE Id=?`;
-//     let result = await db.run(sql, [Favorites_Id, WebPage_Id]);
-//     return result;
-// }
-export { initialization, GetWebPageList, GetWebPage, DelWebPage, RenameTitleWebPage, InsertWebPage, GetWebPageListFavorites }
+async function DelWebPageFavorites(Favorites_Id) {
+    let result = await db.run(`DELETE FROM WebPage WHERE Favorites_Id=?`, [Favorites_Id]);
+    return result;
+}
+
+export { initialization, GetWebPageList, GetWebPage, DelWebPage, RenameTitleWebPage, InsertWebPage, GetWebPageListFavorites,DelWebPageFavorites }

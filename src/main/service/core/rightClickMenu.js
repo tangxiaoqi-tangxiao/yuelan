@@ -2,8 +2,11 @@ import { ipcMain, shell, dialog } from 'electron';
 import path from 'path';
 import { WebPageDataPath } from '@main/utils/globalVariable.js';
 import fse from 'fs-extra';
-import { GetWebPage, DelWebPage as DelWebPageDB, RenameTitleWebPage as RenameTitleWebPageDB, GetWebPageListFavorites } from './webPage';
-import { InsertFavorites as InsertFavoritesDB } from './favorites';
+import {
+    GetWebPage, DelWebPage as DelWebPageDB, RenameTitleWebPage as RenameTitleWebPageDB, GetWebPageListFavorites,
+    DelWebPageFavorites as DelWebPageFavoritesDB
+} from './webPage';
+import { InsertFavorites as InsertFavoritesDB, DelFavorites as DelFavoritesDB, RenameTitleFavorites as RenameTitleFavoritesDB } from './favorites';
 import { WindowMessage } from './System';
 import { sanitizeFilename, getFileVersionedName, isStringEmpty } from '@main/utils/common.js';
 import { originalResourcesPath } from '@main/utils/globalVariable.js';
@@ -22,6 +25,9 @@ function initialization() {
     ipcMain.handle('index:RightClickMenu:InsertFavorites', async (event, data) => InsertFavorites(data));
     ipcMain.handle('index:RightClickMenu:exportHtml', async (event, data) => exportHtml(data));
     ipcMain.handle('index:RightClickMenu:openWebPageUrl', async (event, data) => openWebPageUrl(data));
+    ipcMain.handle('index:RightClickMenu:DelWebPageFavorites', async (event, data) => DelWebPageFavorites(data));
+    ipcMain.handle('index:RightClickMenu:DelFavorites', async (event, data) => DelFavorites(data));
+    ipcMain.handle('index:RightClickMenu:RenameTitleFavorites', async (event, data) => RenameTitleFavorites(data));
 }
 
 //使用浏览器打开web文件
@@ -277,6 +283,57 @@ async function exportHtml(id) {
             });
         }
     });
+}
+
+//删除收藏夹的所有网页
+async function DelWebPageFavorites(id) {
+    let result = await DelWebPageFavoritesDB(id);
+    if (result.changes > 0) {
+        return {
+            code: 0,
+            data: null,
+            message: ""
+        };
+    }
+    return {
+        code: 1,
+        data: null,
+        message: "删除失败"
+    };
+}
+
+//删除收藏夹
+async function DelFavorites(id) {
+    let result = await DelFavoritesDB(id);
+    if (result) {
+        return {
+            code: 0,
+            data: null,
+            message: ""
+        };
+    }
+    return {
+        code: 1,
+        data: null,
+        message: "删除失败"
+    };
+}
+
+//重命名收藏夹
+async function RenameTitleFavorites(data) {
+    let result = await RenameTitleFavoritesDB(data);
+    if (result.changes > 0) {
+        return {
+            code: 0,
+            data: null,
+            message: ""
+        };
+    }
+    return {
+        code: 1,
+        data: null,
+        message: "更新收藏夹失败"
+    };
 }
 
 async function copyFiles(arr) {
