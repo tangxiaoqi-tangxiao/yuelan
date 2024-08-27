@@ -235,6 +235,7 @@ const handleMenuSelect = (optionValue) => {
                     ElMessageBox.prompt('收藏夹名称：', '', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
+                        inputValue: _Favorites.Name,
                     })
                         .then(({ value }) => {
                             Api.RightClickMenu.RenameTitleFavorites({ Name: value, Id: _Favorites.Id }).then(result => {
@@ -263,7 +264,7 @@ const handleMenuSelect = (optionValue) => {
                         cancelButtonText: '取消',
                         type: 'warning',
                     })
-                        .then(({ value }) => {
+                        .then(() => {
                             Api.RightClickMenu.DelWebPageFavorites(_Favorites.Id).then(result => {
                                 if (result.code == 0) {
                                     FavoritesForceUpdate(_Favorites.Id);
@@ -285,7 +286,7 @@ const handleMenuSelect = (optionValue) => {
                         cancelButtonText: '取消',
                         type: 'warning',
                     })
-                        .then(({ value }) => {
+                        .then(() => {
                             Api.RightClickMenu.DelFavorites(_Favorites.Id).then(result => {
                                 if (result.code == 0) {
                                     Home();
