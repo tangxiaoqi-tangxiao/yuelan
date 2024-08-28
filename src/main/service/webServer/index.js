@@ -62,6 +62,14 @@ app.get("/", (req, res) => {
 app.post("/SendMhtml", upload.single('file'), async (req, res) => {
     logger.info('请求触发');
     const uploadedFile = req.file;
+
+    //如果没有上传文件则返回400错误码
+    if (!uploadedFile) {
+        logger.error('没有上传文件');
+        res.status(400).send('');
+        return;
+    }
+
     // 读取请求体中的字符串数据
     const jsonData = JSON.parse(req.body.data); // 这将是一个对象，包含请求体的所有数据
 
