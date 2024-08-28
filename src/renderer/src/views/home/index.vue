@@ -68,11 +68,11 @@
         </div>
         <div id="Content">
             <div>
-                <div id="DragTitle">
+                <!-- <div id="DragTitle">
                     <div id="Title">
                         <WindowButton></WindowButton>
                     </div>
-                </div>
+                </div> -->
                 <div v-if="_SearchShow" style="margin-left: 20px;margin-top: 10px;">
                     <el-input v-model="_input" size="large" @keyup.enter="Submit" :suffix-icon="Search"
                         style="width: 400px" placeholder="搜索网页" />
@@ -549,7 +549,7 @@ const stopResizing = () => {
 #NewPage {
     overflow-y: auto;
     width: 100%;
-    height: calc(100% - 108px);
+    height: calc(100% - 70px);
 }
 
 .background-menu:hover {

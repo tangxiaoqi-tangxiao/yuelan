@@ -8,10 +8,20 @@ import { autoUpdateApp } from '@main/service/window/autoUpdate';
 const WM_INITMENU = 0x0116;
 
 async function WindowManage(MainWindow) {
+  //隐藏工具栏
+  {
+    //判断系统平台
+    if (process.platform === "win32") {
+      MainWindow.removeMenu();
+    } else {
+      Menu.setApplicationMenu(null);
+    }
+  }
+
   //托盘
   {
     // 创建托盘图标
-    const iconPath = path.join(__dirname, '../../resources/icon.png'); // 你的托盘图标路径
+    const iconPath = path.join(__dirname, '../../resources/icon.ico'); // 你的托盘图标路径
     let tray = new Tray(iconPath);
 
     // 托盘图标菜单
@@ -39,6 +49,8 @@ async function WindowManage(MainWindow) {
     app.on("window-all-closed", () => {
       if (process.platform !== "darwin") {
         app.quit();
+      } else {
+        app.dock.hide();
       }
     });
   }
