@@ -37,6 +37,7 @@ async function WindowManage(MainWindow) {
     tray.on('click', () => {
       MainWindow.isVisible() ? MainWindow.hide() : MainWindow.show();
     });
+
     // 退出时销毁托盘图标
     app.on('before-quit', () => {
       tray.destroy();
@@ -52,6 +53,21 @@ async function WindowManage(MainWindow) {
       } else {
         app.dock.hide();
       }
+    });
+
+    function handleClose(e) {
+      MainWindow.hide();
+      if (process.platform == "darwin") {
+        app.dock.hide();
+      }
+      e.preventDefault();//阻止默认事件
+    }
+
+    MainWindow.on('close', handleClose);
+
+    // 退出时注销窗口关闭事件因为handleClose阻止程序退出了
+    app.on('before-quit', () => {
+      MainWindow.removeListener('close', handleClose);
     });
   }
 
