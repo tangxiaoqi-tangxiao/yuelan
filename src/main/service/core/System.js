@@ -4,7 +4,7 @@ import { UUID } from '@main/utils/globalVariable';
 import open, { apps } from 'open';
 import { BootStart_Key, GPU_Key, WebServerPort_Key, OpenHideParameter_Key } from '@main/utils/config';
 import fse from 'fs-extra';
-import { RootDirectory } from '@main/utils/globalVariable.js';
+import { resourcesPath } from '@main/utils/globalVariable.js';
 import logger from '@main/utils/logger.js';
 import path from 'path';
 
@@ -115,7 +115,7 @@ async function OpenWebServerPort(data) {
 }
 
 function OpenLogs() {
-    let logspath = path.join(RootDirectory, "logs");
+    let logspath = path.join(resourcesPath, 'logs');
 
     logger.info(`打开日志文件地址：${logspath}`);
 

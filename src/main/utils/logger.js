@@ -1,5 +1,7 @@
 import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
+import path from 'path';
+import { resourcesPath } from './globalVariable'
 
 const logger = winston.createLogger({
   level: 'info',
@@ -11,14 +13,14 @@ const logger = winston.createLogger({
   ),
   transports: [
     new DailyRotateFile({
-      dirname: './logs',
+      dirname: path.join(resourcesPath, 'logs'),
       filename: 'error-%DATE%.log',
       datePattern: 'YYYY-MM-DD',
       level: 'error',
       maxFiles: '14d'  // 保留最近14天的日志
     }),
     new DailyRotateFile({
-      dirname: './logs',
+      dirname: path.join(resourcesPath, 'logs'),
       filename: 'info-%DATE%.log',
       datePattern: 'YYYY-MM-DD',
       maxFiles: '14d'  // 保留最近14天的日志
