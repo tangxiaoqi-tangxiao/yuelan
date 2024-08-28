@@ -1,7 +1,6 @@
 name: 阅览
 
 on:
-  # 仅在 master 分支发生 push 或 pull request 时触发工作流
   push:
     branches:
       - main
@@ -24,23 +23,41 @@ jobs:
         run: npm install
 
       - name: 打包阅览
-        run: npm run build:win # 假设你有一个名为 build 的 npm 脚本
+        run: npm run build:win
 
       - name: 查看打包后的文件结构
         run: |
           echo "打包后的文件结构如下:"
           Get-ChildItem
 
-      - name: 上传打包后的文件
-        uses: actions/upload-artifact@v3
+      - name: 获取最近的 Git 标签
+        id: get_tag
+        run: echo "::set-output name=tag::$(git describe --tags --abbrev=0)"
+
+      - name: 创建 GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: Win阅览 # 你可以命名为任意名字
-          path: .\dist # 将这个路径替换为打包后文件所在的路径
-          retention-days: 1
+          tag_name: ${{ steps.get_tag.outputs.tag }}
+          release_name: 'Release ${{ steps.get_tag.outputs.tag }}'
+          draft: false
+          prerelease: false
+
+      - name: 上传 Win 打包产物到 Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist
+          asset_name: Win_Release.zip
+          asset_content_type: application/zip
 
   Mac:
     name: Mac打包
-    runs-on: macos-latest # 使用 macOS 运行环境
+    runs-on: macos-latest
 
     steps:
       - name: 检出代码
@@ -55,17 +72,34 @@ jobs:
         run: npm install
 
       - name: 打包阅览
-        run: npm run build:mac # 假设你有一个专门为 macOS 打包的 npm 脚本
+        run: npm run build:mac
 
       - name: 查看打包后的文件结构
         run: |
           echo "打包后的文件结构如下:"
           ls -R ./dist
-        # 使用 ls 命令递归列出 dist 目录中的所有文件
 
-      - name: 上传打包后的文件
-        uses: actions/upload-artifact@v3
+      - name: 获取最近的 Git 标签
+        id: get_tag
+        run: echo "::set-output name=tag::$(git describe --tags --abbrev=0)"
+
+      - name: 创建 GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: Mac阅览 # 你可以命名为任意名字
-          path: ./dist # 将这个路径替换为打包后文件所在的路径
-          retention-days: 1
+          tag_name: ${{ steps.get_tag.outputs.tag }}
+          release_name: 'Release ${{ steps.get_tag.outputs.tag }}'
+          draft: false
+          prerelease: false
+
+      - name: 上传 Mac 打包产物到 Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist
+          asset_name: Mac_Release.zip
+          asset_content_type: application/zip
