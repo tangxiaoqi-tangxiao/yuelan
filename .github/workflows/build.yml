@@ -30,21 +30,14 @@ jobs:
           echo "打包后的文件结构如下:"
           Get-ChildItem
 
-      - name: 获取最近的 Git 标签
-        id: get_tag
-        run: |
-          tag=$(git describe --tags --abbrev=0 || echo "v0.0.0")
-          echo "tag=$tag" >> $GITHUB_ENV
-        shell: pwsh
-
       - name: 创建 GitHub Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.tag }}
-          release_name: 'Release ${{ env.tag }}'
+          tag_name: v1.0.0
+          release_name: 'Release v1.0.0'
           draft: false
           prerelease: false
 
@@ -82,20 +75,14 @@ jobs:
           echo "打包后的文件结构如下:"
           ls -R ./dist
 
-      - name: 获取最近的 Git 标签
-        id: get_tag
-        run: |
-          tag=$(git describe --tags --abbrev=0 || echo "v0.0.0")
-          echo "tag=$tag" >> $GITHUB_ENV
-
       - name: 创建 GitHub Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.tag }}
-          release_name: 'Release ${{ env.tag }}'
+          tag_name: v1.0.0
+          release_name: 'Release v1.0.0'
           draft: false
           prerelease: false
 
