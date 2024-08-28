@@ -32,7 +32,10 @@ jobs:
 
       - name: 获取最近的 Git 标签
         id: get_tag
-        run: echo "::set-output name=tag::$(git describe --tags --abbrev=0)"
+        run: |
+          tag=$(git describe --tags --abbrev=0 || echo "v0.0.0")
+          echo "tag=$tag" >> $GITHUB_ENV
+        shell: pwsh
 
       - name: 创建 GitHub Release
         id: create_release
@@ -40,8 +43,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.get_tag.outputs.tag }}
-          release_name: 'Release ${{ steps.get_tag.outputs.tag }}'
+          tag_name: ${{ env.tag }}
+          release_name: 'Release ${{ env.tag }}'
           draft: false
           prerelease: false
 
@@ -81,7 +84,9 @@ jobs:
 
       - name: 获取最近的 Git 标签
         id: get_tag
-        run: echo "::set-output name=tag::$(git describe --tags --abbrev=0)"
+        run: |
+          tag=$(git describe --tags --abbrev=0 || echo "v0.0.0")
+          echo "tag=$tag" >> $GITHUB_ENV
 
       - name: 创建 GitHub Release
         id: create_release
@@ -89,8 +94,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.get_tag.outputs.tag }}
-          release_name: 'Release ${{ steps.get_tag.outputs.tag }}'
+          tag_name: ${{ env.tag }}
+          release_name: 'Release ${{ env.tag }}'
           draft: false
           prerelease: false
 
