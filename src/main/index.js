@@ -77,9 +77,11 @@ function createWindow() {
     width: 990,
     height: 620,
     show: false,
-    // frame: false, //隐藏工具栏
+    // frame: false, //隐藏整个窗口的工具栏和标题栏
+    // titleBarStyle: "hidden",//隐藏应用窗口标题栏
     fullscreenable: false,//禁用全屏模式
-    // titleBarStyle: "hidden",
+    title:"阅览",
+    icon:icon,
     ...(process.platform === "linux" ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, "../preload/index.js"),

@@ -21,6 +21,7 @@ nsis:
   installerHeaderIcon: "resources/icon.ico"
   oneClick: false
   allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: true
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
