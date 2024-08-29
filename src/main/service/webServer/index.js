@@ -53,7 +53,7 @@ app.use((req, res, next) => {
 
 app.get("/", (req, res) => {
     if (req.query.uuid == UUID) {
-        res.send("Web 服务启动成功");
+        res.send("浏览器扩展连接成功");
     } else {
         res.status(404).send('');
     }

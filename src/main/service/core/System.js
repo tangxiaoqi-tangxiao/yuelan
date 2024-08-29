@@ -85,6 +85,7 @@ async function GetWebServerPort() {
 
 async function SaveWebServerPort(Port) {
     const key = WebServerPort_Key;
+    Port = String(Port);
     let result = await GetWebServerPort();
     if (result) {
         db.run(`UPDATE "Window" SET "Value" = ? WHERE "KEY"=?`, [Port, key]);
@@ -107,6 +108,7 @@ async function OpenWebServerPort(data) {
             break;
     }
     let model = await GetWebServerPort();
+    console.log(`http://localhost:${model.Value}?uuid=${UUID}`);
     open(`http://localhost:${model.Value}?uuid=${UUID}`, { app: { name: browser } }).then(() => {
         console.log('打开成功');
     }).catch((err) => {
