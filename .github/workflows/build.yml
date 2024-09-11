@@ -1,10 +1,5 @@
 name: Build and release Electron apps
 
-# on:
-#   push:
-#     tags:
-#       - v[0-9]+.[0-9]+.[0-9]+
-
 on:
   push:
     branches:
@@ -39,29 +34,49 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           npm run build:win
+        # 将构建的产物路径保存在环境变量中
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_OUTPUT: "path/to/windows/output"
 
       # macOS平台执行命令
       - name: Build electron apps for macOS platform
         if: matrix.os == 'macos-latest'
         run: npm run build:mac
         env:
+          BUILD_OUTPUT: "path/to/macos/output"
+
+      # 创建 GitHub Release (如果不存在)
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Upload artifacts after build
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4.3.1
+      # 上传 Windows 构建产物到 Release
+      - name: Upload Windows build to Release
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-release-asset@v1
         with:
-          name: ${{ matrix.os }}-build
-          path: release
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.BUILD_OUTPUT }}/windows_build.zip
+          asset_name: windows_build.zip
+          asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # 创建 GitHub  Release
-      - name: Release
-        uses: softprops/action-gh-release@v2.0.4
-        
+      # 上传 macOS 构建产物到 Release
+      - name: Upload macOS build to Release
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-release-asset@v1
         with:
-          files: "release/**"
-          draft: true
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.BUILD_OUTPUT }}/mac_build.zip
+          asset_name: mac_build.zip
+          asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
