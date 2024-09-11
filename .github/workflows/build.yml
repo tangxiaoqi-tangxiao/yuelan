@@ -1,100 +1,69 @@
-name: Mac和Windows打包
+name: Build and release Electron apps
 
 on:
   push:
-    branches:
-      - main  # 根据需要更改分支
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
 
 jobs:
-  mac_build:
-    name: Mac打包
-    runs-on: macos-latest
-
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
+  build-and-release:
+    name: Build and release by tag
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [ windows-latest, macos-latest, ubuntu-latest ]
+    
+    permissions:
+      contents: write
 
     steps:
-      - name: 检出代码
-        uses: actions/checkout@v4
+      - name: Check out git repository
+        uses: actions/checkout@v4.1.1
 
-      - name: 设置 Node.js
-        uses: actions/setup-node@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4.0.2
         with:
-          node-version: "v20.16.0"
+          node-version: "20"
 
       - name: 安装依赖
         run: npm install
 
-      - name: 打包 Mac 版本
+      # Windows平台执行命令
+      - name: Build electron apps for Windows platform
+        if: matrix.os == 'windows-latest'
+        run: |
+          npm run build:win
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # macOS平台执行命令
+      - name: Build electron apps for macOS platform
+        if: matrix.os == 'macos-latest'
         run: npm run build:mac
-
-      - name: 查看打包后的文件结构
-        run: |
-          echo "打包后的文件结构如下:"
-          ls -R ./dist
-
-      - name: 压缩 dist 目录
-        run: |
-          zip -r Mac_Release.zip ./dist
-        shell: bash
-
-      - name: 创建 GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v1.0.${{ github.run_number }}
-          release_name: 'Release v1.0.${{ github.run_number }}'
-          draft: false
-          prerelease: false
 
-      - name: 上传 Mac 版本到 GitHub Release
-        uses: actions/upload-release-asset@v1
+      # Linux平台执行命令
+      # - name: Build electron apps for Linux platform
+      #   if: matrix.os == 'ubuntu-latest'
+      #   run: npm run build:linux
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Upload artifacts after build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: ${{ matrix.os }}-build
+          path: release
+
+      # 创建 GitHub Release
+      - name: Release
+        uses: softprops/action-gh-release@v2.0.4
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: "release/**"
+          draft: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./Mac_Release.zip
-          asset_name: Mac_Release.zip
-          asset_content_type: application/zip
-
-  windows_build:
-    name: Windows打包
-    runs-on: windows-latest
-
-    needs: mac_build
-
-    steps:
-      - name: 检出代码
-        uses: actions/checkout@v4
-
-      - name: 设置 Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "v20.16.0"
-
-      - name: 安装依赖
-        run: npm install
-
-      - name: 打包 Windows 版本
-        run: npm run build:win
-
-      - name: 查看打包后的文件结构
-        run: |
-          echo "打包后的文件结构如下:"
-          dir dist
-
-      - name: 压缩 dist 目录
-        run: |
-          Compress-Archive -Path ./dist/* -DestinationPath Windows_Release.zip
-
-      - name: 上传 Windows 版本到 GitHub Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.mac_build.outputs.upload_url }}
-          asset_path: ./Windows_Release.zip
-          asset_name: Windows_Release.zip
-          asset_content_type: application/zip
