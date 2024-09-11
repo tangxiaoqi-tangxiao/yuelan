@@ -56,7 +56,7 @@ jobs:
           name: ${{ matrix.os }}-build
           path: release
 
-      # 创建 GitHub Release
+      # 创建 GitHub  Release
       - name: Release
         uses: softprops/action-gh-release@v2.0.4
         
