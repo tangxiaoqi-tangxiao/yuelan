@@ -1,9 +1,14 @@
 name: Build and release Electron apps
 
+# on:
+#   push:
+#     tags:
+#       - v[0-9]+.[0-9]+.[0-9]+
+
 on:
   push:
-    tags:
-      - v[0-9]+.[0-9]+.[0-9]+
+    branches:
+      - main  # 根据需要更改分支
 
 jobs:
   build-and-release:
