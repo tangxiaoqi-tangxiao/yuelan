@@ -1,102 +1,94 @@
 name: Mac和Windows打包
 
 on:
-    push:
-      branches:
-        - main  # 根据需要更改分支
+  push:
+    branches:
+      - main
 
 jobs:
-    build: # 作业名称
+  build:
+    runs-on: ${{ matrix.os }}
 
-        runs-on: ${{ matrix.os }} # 运行环境
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
 
-        strategy:
-            matrix:
-                os: [macos-latest, windows-latest] # 运行环境
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}  # 将 release 的 upload_url 作为输出传递给下一个 job
 
-        steps:
-            - name: 检出代码
-              uses: actions/checkout@v4 # 检出代码
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
 
-            - name: 安装Node.js
-              uses: actions/setup-node@v4
-              with:
-                node-version: "v20.16.0" # 设置Node.js版本
+      - name: 安装Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "v20.16.0"
 
-            - name: 安装依赖
-              run: npm install
+      - name: 安装依赖
+        run: npm install
 
-            - name: Win打包
-              if: matrix.os == 'windows-latest'
-              run: npm run build:win
+      - name: Win打包
+        if: matrix.os == 'windows-latest'
+        run: npm run build:win
 
-            - name: Mac打包
-              if: matrix.os == 'macos-latest'
-              run: npm run build:mac
+      - name: Mac打包
+        if: matrix.os == 'macos-latest'
+        run: npm run build:mac
 
-            - name: 查看打包后的文件结构
-              run: |
-                if [ "${{ matrix.os }}" == "windows-latest" ]; then
-                  echo "Windows打包后的文件结构如下:"
-                  dir dist
-                else
-                  echo "Mac打包后的文件结构如下:"
-                  ls -R ./dist
-                fi
+      - name: Win查看打包后的文件结构
+        if: matrix.os == 'windows-latest'
+        run: |
+              echo "打包后的文件结构如下:"
+              dir dist
 
-            - name: 压缩 dist 目录
-              run: |
-                if [ "${{ matrix.os }}" == "windows-latest" ]; then
-                  Compress-Archive -Path ./dist/* -DestinationPath Win_Release.zip
-                else
-                  zip -r Mac_Release.zip ./dist
-                fi
-              shell: bash
+      - name: Mac查看打包后的文件结构
+        if: matrix.os == 'macos-latest'
+        run: |
+              echo "打包后的文件结构如下:"
+              ls -R ./dist
 
-            - name: 上传压缩文件为 artifact
-              run: |
-                if [ "${{ matrix.os }}" == "windows-latest" ]; then
-                  echo "上传 Windows 打包的 artifact"
-                  mv Win_Release.zip release.zip
-                else
-                  echo "上传 Mac 打包的 artifact"
-                  mv Mac_Release.zip release.zip
-                fi
-              uses: actions/upload-artifact@v3
-              with:
-                name: release_${{ matrix.os }}
-                path: release.zip
+      - name: Win压缩 dist 目录
+        if: matrix.os == 'windows-latest'
+        run: |
+          Compress-Archive -Path ./dist/* -DestinationPath Win_Release.zip
 
-            - name: 创建 GitHub Release (仅在第一个操作系统上创建)
-              if: ${{ matrix.os == 'macos-latest' }}  # 仅在macos上创建Release
-              id: create_release
-              uses: actions/create-release@v1
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                tag_name: v1.0.${{ github.run_number }}
-                release_name: 'Release v1.0.${{ github.run_number }}'
-                draft: false
-                prerelease: false
+      - name: Mac压缩 dist 目录
+        if: matrix.os == 'macos-latest'
+        run: |
+          zip -r Mac_Release.zip ./dist
+        shell: bash
 
-            - name: 上传 Windows 版本到 GitHub Release
-              if: matrix.os == 'windows-latest'
-              uses: actions/upload-release-asset@v1
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                upload_url: ${{ steps.create_release.outputs.upload_url }}
-                asset_path: ./Win_Release.zip
-                asset_name: yuelan_Win.zip
-                asset_content_type: application/zip
+      - name: 创建 GitHub Release
+        if: matrix.os == 'macos-latest'  # 只在 macOS 上创建 Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          release_name: 'Release v1.0.${{ github.run_number }}'
+          draft: false
+          prerelease: false
 
-            - name: 上传 Mac 版本到 GitHub Release
-              if: matrix.os == 'macos-latest'
-              uses: actions/upload-release-asset@v1
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                upload_url: ${{ steps.create_release.outputs.upload_url }}
-                asset_path: ./Mac_Release.zip
-                asset_name: yuelan_Mac.zip
-                asset_content_type: application/zip
+      - name: 上传 Windows 版本到 GitHub Release
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./Win_Release.zip
+          asset_name: yuelan_Win.zip
+          asset_content_type: application/zip
+
+      - name: 上传 Mac 版本到 GitHub Release
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./Mac_Release.zip
+          asset_name: yuelan_Mac.zip
+          asset_content_type: application/zip
