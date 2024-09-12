@@ -30,13 +30,13 @@ jobs:
               if: matrix.os == 'windows-latest'
               run: |
                     echo "打包后的文件结构如下:"
-                    ls -R ./dist
+                    dir dist
 
             - name: Mac查看打包后的文件结构
               if: matrix.os == 'macos-latest'
               run: |
                     echo "打包后的文件结构如下:"
-                    dir dist
+                    ls -R ./dist
               
             - name: 压缩 dist 目录
               if: matrix.os == 'windows-latest'
