@@ -2,8 +2,8 @@ name: Mac和Windows打包
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   create_release:
@@ -11,6 +11,13 @@ jobs:
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}  # 输出 upload_url 给后续的 jobs
     steps:
+
+      - name: 打印标签名称
+        run: |
+          echo "Tag: ${GITHUB_REF#refs/tags/}"
+        env:
+          GITHUB_REF: ${{ github.ref }}
+
       - name: 创建 GitHub Release
         id: create_release
         uses: actions/create-release@v1
