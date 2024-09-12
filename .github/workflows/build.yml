@@ -6,15 +6,29 @@ on:
       - main
 
 jobs:
+  create_release:
+    runs-on: macos-latest  # 使用 macOS 创建 release
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}  # 输出 upload_url 给后续的 jobs
+    steps:
+      - name: 创建 GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          release_name: 'Release v1.0.${{ github.run_number }}'
+          draft: false
+          prerelease: false
+
   build:
+    needs: create_release  # 依赖于 create_release job
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
         os: [macos-latest, windows-latest]
-
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}  # 将 release 的 upload_url 作为输出传递给下一个 job
 
     steps:
       - name: 检出代码
@@ -59,25 +73,13 @@ jobs:
           zip -r Mac_Release.zip ./dist
         shell: bash
 
-      - name: 创建 GitHub Release
-        if: matrix.os == 'macos-latest'  # 只在 macOS 上创建 Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v1.0.${{ github.run_number }}
-          release_name: 'Release v1.0.${{ github.run_number }}'
-          draft: false
-          prerelease: false
-
       - name: 上传 Windows 版本到 GitHub Release
         if: matrix.os == 'windows-latest'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ needs.create_release.outputs.upload_url }}  # 从 needs 中获取 upload_url
           asset_path: ./Win_Release.zip
           asset_name: yuelan_Win.zip
           asset_content_type: application/zip
@@ -88,7 +90,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ needs.create_release.outputs.upload_url }}  # 从 needs 中获取 upload_url
           asset_path: ./Mac_Release.zip
           asset_name: yuelan_Mac.zip
           asset_content_type: application/zip
