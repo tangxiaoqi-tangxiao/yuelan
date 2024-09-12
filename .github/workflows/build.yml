@@ -27,9 +27,11 @@ jobs:
               run: npm install
 
             - name: Win打包
+              if: matrix.os == 'windows-latest'
               run: npm run build:win
 
             - name: Mac打包
+              if: matrix.os == 'macos-latest'
               run: npm run build:mac
               
             - name: Win查看打包后的文件结构
@@ -44,12 +46,12 @@ jobs:
                     echo "打包后的文件结构如下:"
                     ls -R ./dist
               
-            - name: 压缩 dist 目录
+            - name: Win压缩 dist 目录
               if: matrix.os == 'windows-latest'
               run: |
                 Compress-Archive -Path ./dist/* -DestinationPath Win_Release.zip
 
-            - name: 压缩 dist 目录
+            - name: Mac压缩 dist 目录
               if: matrix.os == 'macos-latest'
               run: |
                 zip -r Mac_Release.zip ./dist
