@@ -55,12 +55,8 @@ jobs:
           zip -r Mac_Release.zip ./dist
         shell: bash
 
-  release:
-    runs-on: macos-latest
-    needs: build
-    steps:
       - name: 创建 GitHub Release 并上传文件
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             Win_Release.zip
